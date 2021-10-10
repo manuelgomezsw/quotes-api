@@ -1,4 +1,4 @@
-package com.quotes.api.repository;
+package com.quotes.api.repositories;
 
 import com.quotes.api.entities.Quote;
 import org.springframework.data.mongodb.repository.MongoRepository;
