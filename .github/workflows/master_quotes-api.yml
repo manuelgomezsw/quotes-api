@@ -21,9 +21,11 @@ jobs:
         with:
           java-version: '11'
 
+      - name: Wrapper validation action
+        uses: gradle/wrapper-validation-action@v1.0.4
+        
       - name: Build with Gradle
-      - uses: gradle/wrapper-validation-action@v1.0.4
-      - run: ./gradle build
+        run: ./gradle clean build
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
