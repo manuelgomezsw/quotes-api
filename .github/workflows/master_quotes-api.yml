@@ -28,6 +28,9 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
+      - name: Listado de objetos
+        run: ls ${{ github.workspace }}/target
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
