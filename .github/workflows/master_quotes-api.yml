@@ -28,11 +28,11 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Upload artifact for deployment job
+      - name: Save public folder
         uses: actions/upload-artifact@v2
         with:
-          name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          name: public
+          path: public
 
   deploy:
     runs-on: ubuntu-latest
