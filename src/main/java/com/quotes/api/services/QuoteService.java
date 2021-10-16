@@ -1,6 +1,7 @@
 package com.quotes.api.services;
 
 import com.quotes.api.entities.Quote;
+import com.quotes.api.exceptions.QuoteBadRequestException;
 import com.quotes.api.exceptions.QuoteNotFoundException;
 import com.quotes.api.repositories.QuoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,8 @@ import java.util.Optional;
 public class QuoteService {
     @Autowired QuoteRepository quoteRepository;
 
-    public List<Quote> getAll() {
-        return quoteRepository.findAll(PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "dateCreated"))).getContent();
+    public List<Quote> getAll(int page, int size, String sortDirection) {
+        return quoteRepository.findAll(PageRequest.of(page, size, Sort.by(getSortDirection(sortDirection),"dateCreated"))).getContent();
     }
 
     public Quote findById(String idQuote) {
@@ -56,6 +57,17 @@ public class QuoteService {
             return quoteRepository.save(quote);
         } else {
             throw new QuoteNotFoundException("Quote not found");
+        }
+    }
+
+    private Sort.Direction getSortDirection(String sortDirection) {
+        switch (sortDirection) {
+            case "ASC":
+                return Sort.Direction.ASC;
+            case "DESC":
+                return Sort.Direction.DESC;
+            default:
+                throw new QuoteBadRequestException("Wrong value of Sort Directions. The value must be ASC or DESC.");
         }
     }
 }
