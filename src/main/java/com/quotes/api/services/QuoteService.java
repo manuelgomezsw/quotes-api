@@ -1,11 +1,11 @@
 package com.quotes.api.services;
 
 import com.quotes.api.entities.Quote;
-import com.quotes.api.exceptions.QuoteBadRequestException;
 import com.quotes.api.exceptions.QuoteNotFoundException;
 import com.quotes.api.repositories.QuoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +16,17 @@ import java.util.Optional;
 public class QuoteService {
     @Autowired QuoteRepository quoteRepository;
 
-    public List<Quote> getAll(int page, int size, String sortDirection) {
-        return quoteRepository.findAll(PageRequest.of(page, size, Sort.by(getSortDirection(sortDirection),"dateCreated"))).getContent();
+    public List<Quote> getAll(Optional<Integer> page, Optional<Integer> size, String sortOrder) {
+    Pageable criteria =
+        PageRequest.of(
+            page == null ? 0 : page.get(),
+            size == null ? 20 : size.get(),
+            Sort.by(getSortDirection(sortOrder), "dateCreated"));
+        return quoteRepository.findAll(criteria).getContent();
+    }
+
+    public List<Quote> findByTag(String tag) {
+        return quoteRepository.findByTagsContaining(tag);
     }
 
     public Quote findById(String idQuote) {
@@ -60,14 +69,12 @@ public class QuoteService {
         }
     }
 
-    private Sort.Direction getSortDirection(String sortDirection) {
-        switch (sortDirection) {
+    private Sort.Direction getSortDirection(String sortOrder) {
+        switch (sortOrder) {
             case "ASC":
                 return Sort.Direction.ASC;
-            case "DESC":
-                return Sort.Direction.DESC;
             default:
-                throw new QuoteBadRequestException("Wrong value of Sort Directions. The value must be ASC or DESC.");
+                return Sort.Direction.DESC;
         }
     }
 }

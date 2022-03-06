@@ -1,11 +1,10 @@
 package com.quotes.api.entities;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.sql.Timestamp;
-import java.util.Date;
 
 @Document(collection = "quotes")
 public class Quote {
@@ -15,8 +14,6 @@ public class Quote {
     private String work;
     private String message;
     private String[] tags;
-
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date dateCreated;
 
     public String getAuthor() {
@@ -58,6 +55,6 @@ public class Quote {
     }
 
     public void setDateCreated() {
-        this.dateCreated = new Timestamp(new Date().getTime());
+        this.dateCreated = Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
 }

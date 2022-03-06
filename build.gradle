@@ -28,7 +28,7 @@ azurewebapp {
 	appName = 'quotes-api-prod'
 	runtime {
 		os = 'windows'
-		javaVersion ='Java 11'
+		javaVersion ='Java 8'
 		webContainer = 'Java SE'
 	}
 	auth {
