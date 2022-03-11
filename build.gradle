@@ -23,12 +23,18 @@ test {
 	useJUnitPlatform()
 }
 
-jar {
+task app(type: Jar) {
+	archiveFileName = 'application.jar'
 	manifest {
-		attributes "Main-Class": "com.quotes.api.Main"
+		attributes 'Main-Class': 'com.quotes.api.Application'
 	}
+	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+	with jar
+}
 
-	from {
-		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-	}
+task run(type: JavaExec) {
+	dependsOn app
+	main = "-jar"
+	args = [app.archivePath]
+	standardInput = System.in
 }
