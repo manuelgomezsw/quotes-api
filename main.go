@@ -9,6 +9,7 @@ import (
 func main() {
 	router := gin.Default()
 	router.GET("/", controller.GetQuotes)
+	router.GET("/search", controller.GetQuotesByTag)
 
 	port := os.Getenv("PORT")
 	if port == "" {
