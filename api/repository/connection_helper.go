@@ -12,7 +12,7 @@ var clientInstanceError error
 var mongoOnce sync.Once
 
 const (
-	ConnectionString = "mongodb+srv://dbuser:Pergamino18.@quotes-cluster.0lj6f.mongodb.net/test"
+	ConnectionString = "..."
 	DB               = "quotes-db"
 	COLLECTION       = "quotes"
 )
