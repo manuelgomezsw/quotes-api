@@ -2,9 +2,11 @@ package services
 
 import (
 	"quotes-api/internal/registry/domain"
+	"quotes-api/internal/registry/repository"
 )
 
 func CreateQuoteService(quote domain.Quote) error {
+	repository.CreateQuery()
 	return nil
 }
 
