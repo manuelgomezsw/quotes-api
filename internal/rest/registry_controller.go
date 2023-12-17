@@ -5,23 +5,77 @@ import (
 	"net/http"
 	"quotes-api/internal/registry/domain"
 	"quotes-api/internal/registry/services"
+	"strconv"
 )
 
 func CreateQuote(c *gin.Context) {
-	var quote domain.Quote
-	services.CreateQuoteService(quote)
+	var newQuote domain.Quote
+	if err := c.ShouldBindJSON(&newQuote); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error serializing body",
+			"error":   err.Error(),
+		})
+		return
+	}
 
-	c.JSON(http.StatusCreated, quote)
+	if err := services.CreateQuoteService(&newQuote); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error posting quote",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, newQuote)
 }
 
 func UpdateQuote(c *gin.Context) {
 	var quote domain.Quote
-	services.UpdateQuoteService(quote)
+	if err := c.ShouldBindJSON(&quote); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error serializing body",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	quoteID, err := strconv.ParseInt(c.Param("quote_id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error serializing quote_id",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if err := services.UpdateQuoteService(quoteID, &quote); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error updating quote",
+			"error":   err.Error(),
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, quote)
 }
 
 func DeleteQuote(c *gin.Context) {
-	services.DeleteQuoteService(c.GetString("quote_id"))
-	c.JSON(http.StatusOK, "Quote deleted")
+	quoteID, err := strconv.ParseInt(c.Param("quote_id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error serializing quote_id",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if err := services.DeleteQuoteService(quoteID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error deleting quote",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
 }
