@@ -29,8 +29,8 @@ func mustConnect() *sql.DB {
 	var mysqlDB *sql.DB
 
 	if os.Getenv("INSTANCE_CONNECTION_NAME") != "" {
-		if os.Getenv("DB_USER") == "" && os.Getenv("DB_IAM_USER") == "" {
-			log.Fatal("Warning: One of DB_USER or DB_IAM_USER must be defined")
+		if os.Getenv("DB_USER") == "" {
+			log.Fatal("Warning: DB_USER must be defined")
 		}
 
 		mysqlDB, err = connectWithConnector()

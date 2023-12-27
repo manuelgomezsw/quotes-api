@@ -3,12 +3,12 @@ module quotes-api
 go 1.21
 
 require (
+	cloud.google.com/go/cloudsqlconn v1.5.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-sql-driver/mysql v1.7.1
 )
 
 require (
-	cloud.google.com/go/cloudsqlconn v1.5.2 // indirect
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
