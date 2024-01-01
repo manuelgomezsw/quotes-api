@@ -26,7 +26,8 @@ func CreateQuote(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, newQuote)
+	c.Header("Access-Control-Allow-Origin", "http://localhost:4200")
+	c.JSON(http.StatusOK, newQuote)
 }
 
 func UpdateQuote(c *gin.Context) {
@@ -56,6 +57,7 @@ func UpdateQuote(c *gin.Context) {
 		return
 	}
 
+	c.Header("Access-Control-Allow-Origin", "http://localhost:4200")
 	c.JSON(http.StatusOK, quote)
 }
 
@@ -77,5 +79,6 @@ func DeleteQuote(c *gin.Context) {
 		return
 	}
 
+	c.Header("Access-Control-Allow-Origin", "http://localhost:4200")
 	c.JSON(http.StatusOK, nil)
 }

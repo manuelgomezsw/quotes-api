@@ -7,7 +7,7 @@ import (
 
 func GetQuoteByID(quoteID int64) (domain.CompleteQuote, error) {
 	resultQuote, err := infraestructure.ClientDB.Query(
-		"SELECT quote_id, author, work, phrase, date_created FROM `quotes-db`.`quotes` WHERE quote_id = ?", quoteID)
+		"SELECT quote_id, author, work, phrase, date_created FROM `quotes`.`quotes` WHERE quote_id = ?", quoteID)
 	if err != nil {
 		return domain.CompleteQuote{}, err
 	}
@@ -25,7 +25,7 @@ func GetQuoteByID(quoteID int64) (domain.CompleteQuote, error) {
 
 func GetQuotesByKeyword(keyword string) ([]domain.CompleteQuote, error) {
 	resultQuote, err := infraestructure.ClientDB.Query(
-		"SELECT quote_id, author, work, phrase, date_created FROM `quotes-db`.`quotes` WHERE phrase LIKE ?", "%"+keyword+"%")
+		"SELECT quote_id, author, work, phrase, date_created FROM `quotes`.`quotes` WHERE phrase LIKE ?", "%"+keyword+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func GetQuotesByKeyword(keyword string) ([]domain.CompleteQuote, error) {
 
 func GetQuotesByAuthor(author string) ([]domain.CompleteQuote, error) {
 	resultQuote, err := infraestructure.ClientDB.Query(
-		"SELECT quote_id, author, work, phrase, date_created FROM `quotes-db`.`quotes` WHERE author LIKE ?", "%"+author+"%")
+		"SELECT quote_id, author, work, phrase, date_created FROM `quotes`.`quotes` WHERE author LIKE ?", "%"+author+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func GetQuotesByAuthor(author string) ([]domain.CompleteQuote, error) {
 
 func GetQuotesByWork(work string) ([]domain.CompleteQuote, error) {
 	resultQuote, err := infraestructure.ClientDB.Query(
-		"SELECT quote_id, author, work, phrase, date_created FROM `quotes-db`.`quotes` WHERE work LIKE ?", "%"+work+"%")
+		"SELECT quote_id, author, work, phrase, date_created FROM `quotes`.`quotes` WHERE work LIKE ?", "%"+work+"%")
 	if err != nil {
 		return nil, err
 	}
