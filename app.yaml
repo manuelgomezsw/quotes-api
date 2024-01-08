@@ -3,7 +3,8 @@ runtime: go121
 instance_class: F1
 
 env_variables:
-  DB_NAME: quotes
-  DB_USER: quotes-user
-  DB_PASS: 'M9@I*49e2b#9Ek}_'
-  INSTANCE_CONNECTION_NAME: 'quotes-api-100:us-east1:quotes-instance'
+  DB_NAME:
+  DB_USER:
+  DB_PASS:
+  INSTANCE_CONNECTION_NAME:
+  CORS_ORIGIN:

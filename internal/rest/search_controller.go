@@ -31,7 +31,6 @@ func GetQuoteByID(c *gin.Context) {
 		return
 	}
 
-	c.Header("Access-Control-Allow-Origin", "http://localhost:4200")
 	c.JSON(http.StatusOK, quote)
 }
 
@@ -57,7 +56,6 @@ func GetQuotesByKeyword(c *gin.Context) {
 		return
 	}
 
-	c.Header("Access-Control-Allow-Origin", "http://localhost:4200")
 	c.JSON(http.StatusOK, quotes)
 }
 
