@@ -1,10 +1,10 @@
-package rest
+package registry
 
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"quotes-api/internal/registry/domain"
-	"quotes-api/internal/registry/services"
+	"quotes-api/internal/domain"
+	"quotes-api/internal/domain/registry/services"
 	"strconv"
 )
 

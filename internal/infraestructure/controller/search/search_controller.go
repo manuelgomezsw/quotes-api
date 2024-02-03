@@ -1,9 +1,9 @@
-package rest
+package search
 
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"quotes-api/internal/search/services"
+	"quotes-api/internal/domain/search/services"
 	"strconv"
 )
 
