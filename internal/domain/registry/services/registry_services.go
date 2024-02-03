@@ -1,8 +1,8 @@
 package services
 
 import (
-	"quotes-api/internal/registry/domain"
-	"quotes-api/internal/registry/repository"
+	"quotes-api/internal/domain"
+	"quotes-api/internal/domain/registry/repository"
 )
 
 func CreateQuoteService(quote *domain.Quote) error {

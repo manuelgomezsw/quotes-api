@@ -1,4 +1,4 @@
-package infraestructure
+package mysql
 
 import (
 	"cloud.google.com/go/cloudsqlconn"
@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"quotes-api/internal/util/constant"
 	"sync"
 )
 
@@ -28,8 +29,8 @@ func mustConnect() *sql.DB {
 	var err error
 	var mysqlDB *sql.DB
 
-	if os.Getenv("INSTANCE_CONNECTION_NAME") != "" {
-		if os.Getenv("DB_USER") == "" {
+	if os.Getenv(constant.InstanceConnectionName) != "" {
+		if os.Getenv(constant.DbUser) == "" {
 			log.Fatal("Warning: DB_USER must be defined")
 		}
 
@@ -48,10 +49,10 @@ func mustConnect() *sql.DB {
 
 func connectWithConnector() (*sql.DB, error) {
 	var (
-		dbUser                 = os.Getenv("DB_USER")
-		dbPwd                  = os.Getenv("DB_PASS")
-		dbName                 = os.Getenv("DB_NAME")
-		instanceConnectionName = os.Getenv("INSTANCE_CONNECTION_NAME")
+		dbUser                 = os.Getenv(constant.DbUser)
+		dbPwd                  = os.Getenv(constant.DbPassword)
+		dbName                 = os.Getenv(constant.DbName)
+		instanceConnectionName = os.Getenv(constant.InstanceConnectionName)
 	)
 
 	d, err := cloudsqlconn.NewDialer(context.Background())
@@ -75,27 +76,3 @@ func connectWithConnector() (*sql.DB, error) {
 	}
 	return dbPool, nil
 }
-
-/*
-func connectToDB() (*sql.DB, error) {
-	mySqlClientDB, err := sql.Open("mysql", getConnString())
-	if err != nil {
-		return nil, err
-	}
-
-	mySqlClientDB.SetConnMaxLifetime(time.Minute * 3)
-	mySqlClientDB.SetMaxOpenConns(10)
-	mySqlClientDB.SetMaxIdleConns(10)
-
-	err = mySqlClientDB.Ping()
-	if err != nil {
-		return nil, err
-	}
-
-	return mySqlClientDB, nil
-}
-
-func getConnString() string {
-	return os.Getenv("CONN_STRING")
-}
-*/
