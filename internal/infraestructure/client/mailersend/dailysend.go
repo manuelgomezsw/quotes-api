@@ -96,7 +96,7 @@ func getPersonalization(quote domain.Quote) []mailersend.Personalization {
 		"work":         quote.Work,
 		"quote":        quote.Phrase,
 		"author":       quote.Author,
-		"date_created": quote.DateCreated,
+		"date_created": quote.GetDateCreatedFormatted(),
 	}
 	personalizations = append(personalizations, manuDailyQuotePersonalization)
 
@@ -106,7 +106,7 @@ func getPersonalization(quote domain.Quote) []mailersend.Personalization {
 		"work":         quote.Work,
 		"quote":        quote.Phrase,
 		"author":       quote.Author,
-		"date_created": quote.DateCreated,
+		"date_created": quote.GetDateCreatedFormatted(),
 	}
 	personalizations = append(personalizations, cataDailyQuotePersonalization)
 

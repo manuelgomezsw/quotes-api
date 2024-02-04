@@ -6,7 +6,6 @@ import (
 	"quotes-api/internal/domain/daily/repository"
 	"quotes-api/internal/infraestructure/client/mailersend"
 	"quotes-api/internal/util/constant"
-	"time"
 )
 
 func SendDailyQuote(ctx context.Context) (string, error) {
@@ -16,7 +15,6 @@ func SendDailyQuote(ctx context.Context) (string, error) {
 	}
 
 	completeDataDailyQuote(&dailyQuote)
-	formatDate(&dailyQuote)
 
 	confirmationID, err := mailersend.SendMail(ctx, dailyQuote)
 	if err != nil {
@@ -29,14 +27,5 @@ func SendDailyQuote(ctx context.Context) (string, error) {
 func completeDataDailyQuote(quote *domain.Quote) {
 	if quote.Author == "" {
 		quote.Author = constant.Desconocido
-	}
-}
-
-func formatDate(quote *domain.Quote) {
-	if quote.DateCreated != "" {
-		castDate, err := time.Parse("January 02, 2006", quote.DateCreated)
-		if err != nil {
-			quote.DateCreated = castDate.String()
-		}
 	}
 }
