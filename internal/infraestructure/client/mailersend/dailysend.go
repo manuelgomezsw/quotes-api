@@ -4,11 +4,11 @@ import (
 	"context"
 	"github.com/mailersend/mailersend-go"
 	"os"
-	"quotes-api/internal/domain"
+	"quotes-api/internal/domain/quotes"
 	"quotes-api/internal/util/constant"
 )
 
-func SendMail(ctx context.Context, quote domain.Quote) (string, error) {
+func SendMail(ctx context.Context, quote quotes.Quote) (string, error) {
 	ms := mailersend.NewMailersend(os.Getenv(constant.MailersendApiKey))
 
 	subject := constant.SenderSubject
@@ -82,7 +82,7 @@ func getVariables() []mailersend.Variables {
 	}
 }
 
-func getPersonalization(quote domain.Quote) []mailersend.Personalization {
+func getPersonalization(quote quotes.Quote) []mailersend.Personalization {
 	var (
 		manuDailyQuotePersonalization mailersend.Personalization
 		cataDailyQuotePersonalization mailersend.Personalization

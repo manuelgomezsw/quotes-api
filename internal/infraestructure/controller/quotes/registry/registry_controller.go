@@ -3,13 +3,13 @@ package registry
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"quotes-api/internal/domain"
-	"quotes-api/internal/domain/registry/services"
+	"quotes-api/internal/domain/quotes"
+	"quotes-api/internal/domain/quotes/registry/services"
 	"strconv"
 )
 
-func CreateQuote(c *gin.Context) {
-	var newQuote domain.Quote
+func Create(c *gin.Context) {
+	var newQuote quotes.Quote
 	if err := c.ShouldBindJSON(&newQuote); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Error serializing body",
@@ -29,8 +29,8 @@ func CreateQuote(c *gin.Context) {
 	c.JSON(http.StatusOK, newQuote)
 }
 
-func UpdateQuote(c *gin.Context) {
-	var quote domain.Quote
+func Update(c *gin.Context) {
+	var quote quotes.Quote
 	if err := c.ShouldBindJSON(&quote); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Error serializing body",
@@ -59,7 +59,7 @@ func UpdateQuote(c *gin.Context) {
 	c.JSON(http.StatusOK, quote)
 }
 
-func DeleteQuote(c *gin.Context) {
+func Delete(c *gin.Context) {
 	quoteID, err := strconv.ParseInt(c.Param("quote_id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

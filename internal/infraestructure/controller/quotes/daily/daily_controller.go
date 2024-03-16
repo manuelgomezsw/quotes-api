@@ -3,7 +3,7 @@ package daily
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"quotes-api/internal/domain/daily/services"
+	"quotes-api/internal/domain/quotes/daily/services"
 )
 
 func SendDailyQuote(c *gin.Context) {

@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"quotes-api/internal/domain"
+	"quotes-api/internal/domain/quotes"
 	"quotes-api/internal/util/mysql"
 )
 
-func CreateQuote(newQuote *domain.Quote) error {
+func CreateQuote(newQuote *quotes.Quote) error {
 	newRecord, err := mysql.ClientDB.Exec(
 		"INSERT INTO `quotes`.`quotes` (author, work, phrase) VALUES (?, ?, ?)",
 		newQuote.Author,
@@ -24,7 +24,7 @@ func CreateQuote(newQuote *domain.Quote) error {
 	return nil
 }
 
-func UpdateQuote(quoteID int64, currentQuote *domain.Quote) error {
+func UpdateQuote(quoteID int64, currentQuote *quotes.Quote) error {
 	_, err := mysql.ClientDB.Exec(
 		"UPDATE `quotes`.`quotes` SET author = ?, work = ?, phrase = ?  WHERE quote_id = ?",
 		currentQuote.Author,

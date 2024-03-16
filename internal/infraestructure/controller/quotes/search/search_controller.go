@@ -3,7 +3,7 @@ package search
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"quotes-api/internal/domain/search/services"
+	"quotes-api/internal/domain/quotes/search/services"
 	"strconv"
 )
 

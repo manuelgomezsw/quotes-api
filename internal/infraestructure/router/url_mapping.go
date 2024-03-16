@@ -2,30 +2,41 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"quotes-api/internal/infraestructure/controller/daily"
-	"quotes-api/internal/infraestructure/controller/registry"
-	"quotes-api/internal/infraestructure/controller/search"
+	quotesDaily "quotes-api/internal/infraestructure/controller/quotes/daily"
+	quotesRegistry "quotes-api/internal/infraestructure/controller/quotes/registry"
+	quotesSearch "quotes-api/internal/infraestructure/controller/quotes/search"
+	wordsRegistry "quotes-api/internal/infraestructure/controller/words/registry"
+	wordsSearch "quotes-api/internal/infraestructure/controller/words/search"
 )
 
 func mapURLs(router *gin.Engine) {
-	registryURLs(router)
-	searchURLs(router)
-	dailyURLs(router)
+	quotesUrls(router)
+	wordsUrls(router)
 }
 
-func registryURLs(router *gin.Engine) {
-	router.POST("/quote", registry.CreateQuote)
-	router.PUT("/quote/:quote_id", registry.UpdateQuote)
-	router.DELETE("/quote/:quote_id", registry.DeleteQuote)
+func quotesUrls(router *gin.Engine) {
+	// Registry quotes
+	router.POST("/quote", quotesRegistry.Create)
+	router.PUT("/quote/:quote_id", quotesRegistry.Update)
+	router.DELETE("/quote/:quote_id", quotesRegistry.Delete)
+
+	// Search quotes
+	router.GET("/quote/:quote_id", quotesSearch.GetQuoteByID)
+	router.GET("/quote/author/:author", quotesSearch.GetQuotesByAuthor)
+	router.GET("/quote/work/:work", quotesSearch.GetQuotesByWork)
+	router.GET("/quote/keyword/:keyword", quotesSearch.GetQuotesByKeyword)
+
+	// Daily job quotes
+	router.POST("/quote/daily", quotesDaily.SendDailyQuote)
 }
 
-func searchURLs(router *gin.Engine) {
-	router.GET("/quote/:quote_id", search.GetQuoteByID)
-	router.GET("/quote/author/:author", search.GetQuotesByAuthor)
-	router.GET("/quote/work/:work", search.GetQuotesByWork)
-	router.GET("/quote/keyword/:keyword", search.GetQuotesByKeyword)
-}
+func wordsUrls(router *gin.Engine) {
+	// Registry words
+	router.POST("/word", wordsRegistry.Create)
+	router.PUT("/word/:word_id", wordsRegistry.Update)
+	router.DELETE("/word/:word_id", wordsRegistry.Delete)
 
-func dailyURLs(router *gin.Engine) {
-	router.POST("/quote/daily", daily.SendDailyQuote)
+	// Search words
+	router.GET("/word/:word_id", wordsSearch.GetByID)
+	router.GET("/word/keyword/:keyword", wordsSearch.GetByKeyword)
 }

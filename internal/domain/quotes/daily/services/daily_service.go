@@ -2,8 +2,8 @@ package services
 
 import (
 	"context"
-	"quotes-api/internal/domain"
-	"quotes-api/internal/domain/daily/repository"
+	"quotes-api/internal/domain/quotes"
+	"quotes-api/internal/domain/quotes/daily/repository"
 	"quotes-api/internal/infraestructure/client/mailersend"
 	"quotes-api/internal/util/constant"
 )
@@ -24,7 +24,7 @@ func SendDailyQuote(ctx context.Context) (string, error) {
 	return confirmationID, nil
 }
 
-func completeDataDailyQuote(quote *domain.Quote) {
+func completeDataDailyQuote(quote *quotes.Quote) {
 	if quote.Author == "" {
 		quote.Author = constant.Desconocido
 	}

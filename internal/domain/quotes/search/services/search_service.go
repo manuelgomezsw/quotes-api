@@ -1,20 +1,20 @@
 package services
 
 import (
-	"quotes-api/internal/domain"
-	"quotes-api/internal/domain/search/repository"
+	"quotes-api/internal/domain/quotes"
+	"quotes-api/internal/domain/quotes/search/repository"
 )
 
-func GetQuoteByID(quoteID int64) (domain.Quote, error) {
+func GetQuoteByID(quoteID int64) (quotes.Quote, error) {
 	quote, err := repository.GetQuoteByID(quoteID)
 	if err != nil {
-		return domain.Quote{}, err
+		return quotes.Quote{}, err
 	}
 
 	return quote, nil
 }
 
-func GetQuotesByKeyword(keyword string) ([]domain.Quote, error) {
+func GetQuotesByKeyword(keyword string) ([]quotes.Quote, error) {
 	quote, err := repository.GetQuotesByKeyword(keyword)
 	if err != nil {
 		return nil, err
@@ -23,7 +23,7 @@ func GetQuotesByKeyword(keyword string) ([]domain.Quote, error) {
 	return quote, nil
 }
 
-func GetQuotesByAuthor(author string) ([]domain.Quote, error) {
+func GetQuotesByAuthor(author string) ([]quotes.Quote, error) {
 	quote, err := repository.GetQuotesByAuthor(author)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func GetQuotesByAuthor(author string) ([]domain.Quote, error) {
 	return quote, nil
 }
 
-func GetQuotesByWork(work string) ([]domain.Quote, error) {
+func GetQuotesByWork(work string) ([]quotes.Quote, error) {
 	quote, err := repository.GetQuotesByWork(work)
 	if err != nil {
 		return nil, err
