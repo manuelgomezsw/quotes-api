@@ -4,10 +4,10 @@ instance_class: F1
 service: default
 
 env_variables:
-  DB_NAME:
-  DB_USER:
-  DB_PASS:
-  INSTANCE_CONNECTION_NAME:
-  CORS_ORIGIN:
-  EMAIL_TEMPLATE_ID:
-  MAILERSEND_API_KEY:
+  DB_NAME: quotes
+  DB_USER: quotes-user
+  DB_PASS: 'M9@I*49e2b#9Ek}_'
+  INSTANCE_CONNECTION_NAME: 'quotes-api-100:us-east1:quotes-instance'
+  CORS_ORIGIN: 'https://tintaindeleble.com'
+  EMAIL_TEMPLATE_ID: 7dnvo4dd62r45r86
+  MAILERSEND_API_KEY: mlsn.bc7e8c2c7047fdc1d7cc4c7b4bd64ff1390b3762fb3a362c516e7a9f46fe5376
