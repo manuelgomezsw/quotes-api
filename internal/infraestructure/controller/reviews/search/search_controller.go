@@ -33,3 +33,23 @@ func GetByID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, review)
 }
+
+func GetByTitle(c *gin.Context) {
+	title := c.Param("title")
+
+	reviews, err := services.GetByTitle(title)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error getting review",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if len(reviews) == 0 {
+		c.JSON(http.StatusNotFound, nil)
+		return
+	}
+
+	c.JSON(http.StatusOK, reviews)
+}

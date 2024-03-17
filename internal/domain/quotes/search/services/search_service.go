@@ -40,3 +40,7 @@ func GetQuotesByWork(work string) ([]quotes.Quote, error) {
 
 	return quote, nil
 }
+
+func GetTopics() ([]quotes.Topic, error) {
+	return repository.GetTopics()
+}

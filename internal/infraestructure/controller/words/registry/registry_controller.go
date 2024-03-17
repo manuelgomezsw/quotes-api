@@ -19,10 +19,7 @@ func Create(c *gin.Context) {
 	}
 
 	if err := services.Create(&newWord); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error posting word",
-			"error":   err.Error(),
-		})
+		c.JSON(err.Status(), err)
 		return
 	}
 

@@ -3,10 +3,11 @@ package services
 import (
 	"quotes-api/internal/domain/words"
 	"quotes-api/internal/domain/words/registry/repository"
+	"quotes-api/internal/util/apierror"
 	"strings"
 )
 
-func Create(word *words.Word) error {
+func Create(word *words.Word) apierror.ApiError {
 	formatWord(word)
 
 	if err := repository.Create(word); err != nil {

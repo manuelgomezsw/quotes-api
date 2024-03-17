@@ -13,3 +13,12 @@ func GetByID(reviewID int64) (reviews.Review, error) {
 
 	return review, nil
 }
+
+func GetByTitle(title string) ([]reviews.Review, error) {
+	reviews, err := repository.GetByTitle(title)
+	if err != nil {
+		return nil, err
+	}
+
+	return reviews, nil
+}

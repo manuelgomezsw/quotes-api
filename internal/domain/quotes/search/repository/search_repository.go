@@ -88,3 +88,25 @@ func GetQuotesByWork(work string) ([]quotes.Quote, error) {
 
 	return quotesSearched, nil
 }
+
+func GetTopics() ([]quotes.Topic, error) {
+	resultTopics, err := mysql.ClientDB.Query(
+		"SELECT DISTINCT CASE WHEN author = '' THEN 'Anónimo' ELSE author END 'value', 'author' AS 'type' FROM quotes.quotes UNION ALL SELECT DISTINCT `work` 'value', 'work' AS 'type' FROM quotes.quotes WHERE `work` != ''")
+	if err != nil {
+		return nil, err
+	}
+
+	var topics []quotes.Topic
+	for resultTopics.Next() {
+		var topic quotes.Topic
+
+		err = resultTopics.Scan(&topic.Value, &topic.Type)
+		if err != nil {
+			return nil, err
+		}
+
+		topics = append(topics, topic)
+	}
+
+	return topics, nil
+}

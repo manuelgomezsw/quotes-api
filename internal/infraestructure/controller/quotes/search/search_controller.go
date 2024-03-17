@@ -108,3 +108,21 @@ func GetQuotesByWork(c *gin.Context) {
 
 	c.JSON(http.StatusOK, quotes)
 }
+
+func GetTopics(c *gin.Context) {
+	quotes, err := services.GetTopics()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error getting quotes",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if quotes == nil {
+		c.JSON(http.StatusNotFound, nil)
+		return
+	}
+
+	c.JSON(http.StatusOK, quotes)
+}
