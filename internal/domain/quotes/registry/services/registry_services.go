@@ -35,27 +35,32 @@ func DeleteQuoteService(quoteID int64) error {
 }
 
 func formatQuote(quote *quotes.Quote) {
-	trimSpaceQuote(quote)
-	removeEndPeriodQuote(quote)
-}
+	quote.Author = trimSpaceQuote(quote.Author)
+	quote.Phrase = trimSpaceQuote(quote.Phrase)
+	quote.Work = trimSpaceQuote(quote.Work)
 
-func trimSpaceQuote(quote *quotes.Quote) {
-	quote.Author = strings.TrimSpace(quote.Author)
-	quote.Work = strings.TrimSpace(quote.Work)
-	quote.Phrase = strings.TrimSpace(quote.Phrase)
-}
-
-func removeEndPeriodQuote(quote *quotes.Quote) {
 	quote.Author = removeEndPeriod(quote.Author)
 	quote.Work = removeEndPeriod(quote.Work)
 	quote.Phrase = removeEndPeriod(quote.Phrase)
 }
 
-func removeEndPeriod(word string) string {
-	lastCharacter := word[len(word)-1:]
-	if lastCharacter == "." {
-		return word[0 : len(word)-1]
+func trimSpaceQuote(value string) string {
+	if value == "" {
+		return value
 	}
 
-	return word
+	return strings.TrimSpace(value)
+}
+
+func removeEndPeriod(value string) string {
+	if value == "" {
+		return value
+	}
+
+	lastCharacter := value[len(value)-1:]
+	if lastCharacter == "." {
+		return value[0 : len(value)-1]
+	}
+
+	return value
 }
