@@ -10,8 +10,8 @@ const (
 
 	SenderName    = "Tinta Indeleble"
 	SenderSubject = "Frase del día"
-	SenderEmail   = "frases@tintaindeleble.com"
-	SenderUrlSite = "https://tintaindeleble.com"
+	SenderEmail   = "frases@josemgomez.com"
+	SenderUrlSite = "https://josemgomez.com"
 
 	MailersendApiKey = "MAILERSEND_API_KEY"
 	EmailTemplateID  = "EMAIL_TEMPLATE_ID"
