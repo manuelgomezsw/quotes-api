@@ -67,10 +67,10 @@ func connectWithConnector() (*sql.DB, error) {
 			return d.Dial(ctx, instanceConnectionName, opts...)
 		})
 
-	dbURI := fmt.Sprintf("%s:%s@cloudsqlconn(localhost:3306)/%s?parseTime=true",
+	dsn := fmt.Sprintf("%s:%s@cloudsqlconn(localhost:3306)/%s?parseTime=true",
 		dbUser, dbPwd, dbName)
 
-	dbPool, err := sql.Open("mysql", dbURI)
+	dbPool, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open: %w", err)
 	}
