@@ -70,8 +70,8 @@ func DeleteQuote(quoteID int64) error {
 
 func createTags(quoteID int64, tags string) error {
 	bulkInsert := "INSERT INTO tags (quote_id, tag) VALUES "
-	values := []string{}
-	args := []interface{}{}
+	var values []string
+	var args []interface{}
 
 	for _, tag := range strings.Split(tags, `,`) {
 		values = append(values, "(?, ?)")
