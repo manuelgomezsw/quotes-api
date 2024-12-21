@@ -9,7 +9,7 @@ import (
 	"quotes-api/internal/domain/quotes"
 	"quotes-api/internal/domain/quotes/registry/repository"
 	"quotes-api/internal/util/constant"
-	"strings"
+	"quotes-api/internal/util/customstrings"
 )
 
 func CreateQuoteService(quote *quotes.Quote) error {
@@ -49,36 +49,15 @@ func DeleteQuoteService(quoteID int64) error {
 }
 
 func formatQuote(quote *quotes.Quote, keywords string) {
-	quote.Author = trimSpaceQuote(quote.Author)
-	quote.Phrase = trimSpaceQuote(quote.Phrase)
-	quote.Work = trimSpaceQuote(quote.Work)
+	quote.Author = customstrings.TrimSpace(quote.Author)
+	quote.Phrase = customstrings.TrimSpace(quote.Phrase)
+	quote.Work = customstrings.TrimSpace(quote.Work)
 
-	quote.Author = removeEndPeriod(quote.Author)
-	quote.Work = removeEndPeriod(quote.Work)
-	quote.Phrase = removeEndPeriod(quote.Phrase)
+	quote.Author = customstrings.RemoveEndPeriod(quote.Author)
+	quote.Work = customstrings.RemoveEndPeriod(quote.Work)
+	quote.Phrase = customstrings.RemoveEndPeriod(quote.Phrase)
 
-	quote.Tags = keywords
-}
-
-func trimSpaceQuote(value string) string {
-	if value == "" {
-		return value
-	}
-
-	return strings.TrimSpace(value)
-}
-
-func removeEndPeriod(value string) string {
-	if value == "" {
-		return value
-	}
-
-	lastCharacter := value[len(value)-1:]
-	if lastCharacter == "." {
-		return value[0 : len(value)-1]
-	}
-
-	return value
+	quote.Tags = customstrings.RemoveSpecialCharacters(keywords)
 }
 
 func getTags(quote string) (string, error) {

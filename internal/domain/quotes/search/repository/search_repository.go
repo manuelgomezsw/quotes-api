@@ -25,7 +25,7 @@ func GetQuoteByID(quoteID int64) (quotes.Quote, error) {
 
 func GetQuotesByKeyword(keyword string) ([]quotes.Quote, error) {
 	resultQuote, err := mysql.ClientDB.Query(
-		"SELECT quote_id, author, work, phrase, date_created FROM `quotes`.`quotes` WHERE phrase LIKE ?", "%"+keyword+"%")
+		"SELECT q.quote_id, q.author, q.work, q.phrase, q.date_created FROM quotes q JOIN tags t ON q.quote_id = t.quote_id WHERE t.tag LIKE ?", "%"+keyword+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -89,18 +89,17 @@ func GetQuotesByWork(work string) ([]quotes.Quote, error) {
 	return quotesSearched, nil
 }
 
-func GetTopics() ([]quotes.Topic, error) {
-	resultTopics, err := mysql.ClientDB.Query(
-		"SELECT DISTINCT CASE WHEN author = '' THEN 'Anónimo' ELSE author END 'value', 'author' AS 'type' FROM quotes.quotes UNION ALL SELECT DISTINCT `work` 'value', 'work' AS 'type' FROM quotes.quotes WHERE `work` != ''")
+func GetTopics() ([]quotes.Tag, error) {
+	resultTopics, err := mysql.ClientDB.Query("SELECT DISTINCT tag FROM tags t ORDER BY tag")
 	if err != nil {
 		return nil, err
 	}
 
-	var topics []quotes.Topic
+	var topics []quotes.Tag
 	for resultTopics.Next() {
-		var topic quotes.Topic
+		var topic quotes.Tag
 
-		err = resultTopics.Scan(&topic.Value, &topic.Type)
+		err = resultTopics.Scan(&topic.ID, &topic.Tag)
 		if err != nil {
 			return nil, err
 		}

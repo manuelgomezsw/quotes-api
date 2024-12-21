@@ -41,6 +41,6 @@ func GetQuotesByWork(work string) ([]quotes.Quote, error) {
 	return quote, nil
 }
 
-func GetTopics() ([]quotes.Topic, error) {
+func GetTopics() ([]quotes.Tag, error) {
 	return repository.GetTopics()
 }
