@@ -7,6 +7,7 @@ type Quote struct {
 	Author      string    `json:"author"`
 	Work        string    `json:"work"`
 	Phrase      string    `json:"phrase"`
+	Tags        string    `json:"Tags"`
 	DateCreated time.Time `json:"date_created"`
 }
 

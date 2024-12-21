@@ -110,3 +110,27 @@ func GetTopics() ([]quotes.Topic, error) {
 
 	return topics, nil
 }
+
+/*
+func GetQuotes() ([]quotes.QuoteGPT, error) {
+	resultQuote, err := mysql.ClientDB.Query(
+		"SELECT author, phrase FROM `quotes`.`quotes`")
+	if err != nil {
+		return nil, err
+	}
+
+	var quotesSearched []quotes.QuoteGPT
+	for resultQuote.Next() {
+		var quote quotes.QuoteGPT
+
+		err = resultQuote.Scan(&quote.Author, &quote.Phrase)
+		if err != nil {
+			return nil, err
+		}
+
+		quotesSearched = append(quotesSearched, quote)
+	}
+
+	return quotesSearched, nil
+}
+*/
