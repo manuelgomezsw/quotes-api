@@ -3,7 +3,9 @@
 1. Ejectuar `go mod tidy`.
 2. Tener instalado [Google Cloud CLI](#google-cloud-cli). 
 2. Habilitar [CloudSQL](#cloudsql).
-3. Agregar la variable de entorno `PROJECT_ID: quotes-api-100`.
+3. Agregar las siguientes variables de entorno en modo desarrollo:
+   1. `PROJECT_ID: quotes-api-100`
+   2. `APP_ENV: development`
 
 ## Valores configurables
 El proyecto tiene dos respositorios donde se almacenan los valores configurables:
