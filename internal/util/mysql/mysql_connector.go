@@ -9,7 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net"
-	"os"
+	"quotes-api/internal/infraestructure/client/secretmanager"
 	"quotes-api/internal/util/constant"
 	"sync"
 )
@@ -29,15 +29,9 @@ func mustConnect() *sql.DB {
 	var err error
 	var mysqlDB *sql.DB
 
-	if os.Getenv(constant.InstanceConnectionName) != "" {
-		if os.Getenv(constant.DbUser) == "" {
-			log.Fatal("Warning: DB_USER must be defined")
-		}
-
-		mysqlDB, err = connectWithConnector()
-		if err != nil {
-			log.Fatalf("connectConnector: unable to connect: %s", err)
-		}
+	mysqlDB, err = connectWithConnector()
+	if err != nil {
+		log.Fatalf("connectConnector: unable to connect: %s", err)
 	}
 
 	if mysqlDB == nil {
@@ -48,12 +42,25 @@ func mustConnect() *sql.DB {
 }
 
 func connectWithConnector() (*sql.DB, error) {
-	var (
-		dbUser                 = os.Getenv(constant.DbUser)
-		dbPwd                  = os.Getenv(constant.DbPassword)
-		dbName                 = os.Getenv(constant.DbName)
-		instanceConnectionName = os.Getenv(constant.InstanceConnectionName)
-	)
+	dbUser, err := secretmanager.GetValue(constant.DbUser)
+	if err != nil {
+		return nil, err
+	}
+
+	dbPwd, err := secretmanager.GetValue(constant.DbPassword)
+	if err != nil {
+		return nil, err
+	}
+
+	dbName, err := secretmanager.GetValue(constant.DbName)
+	if err != nil {
+		return nil, err
+	}
+
+	instanceConnectionName, err := secretmanager.GetValue(constant.InstanceConnectionName)
+	if err != nil {
+		return nil, err
+	}
 
 	d, err := cloudsqlconn.NewDialer(context.Background())
 	if err != nil {

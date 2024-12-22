@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"quotes-api/internal/domain/quotes"
 	"quotes-api/internal/domain/quotes/registry/repository"
+	"quotes-api/internal/infraestructure/client/firestore"
+	"quotes-api/internal/infraestructure/client/secretmanager"
 	"quotes-api/internal/util/constant"
 	"quotes-api/internal/util/customstrings"
 )
@@ -70,9 +71,19 @@ func getTags(quote string) (string, error) {
 		"temperature": 0.7,
 	})
 
-	req, _ := http.NewRequest("POST", os.Getenv(constant.OpenaiAPIURL), bytes.NewBuffer(requestBody))
+	openAIURL, err := firestore.GetValue(constant.OpenaiAPIURL)
+	if err != nil {
+		return "", err
+	}
+
+	openAIApiKey, err := secretmanager.GetValue(constant.OpenaiApiKey)
+	if err != nil {
+		return "", err
+	}
+
+	req, _ := http.NewRequest("POST", openAIURL, bytes.NewBuffer(requestBody))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+os.Getenv(constant.OpenaiApiKey))
+	req.Header.Set("Authorization", "Bearer "+openAIApiKey)
 
 	resp, err := client.Do(req)
 	if err != nil {

@@ -3,13 +3,23 @@ package mailersend
 import (
 	"context"
 	"github.com/mailersend/mailersend-go"
-	"os"
 	"quotes-api/internal/domain/quotes"
+	"quotes-api/internal/infraestructure/client/firestore"
 	"quotes-api/internal/util/constant"
 )
 
 func SendMail(ctx context.Context, quote quotes.Quote) (string, error) {
-	ms := mailersend.NewMailersend(os.Getenv(constant.MailersendApiKey))
+	mailersendApiKey, err := firestore.GetValue(constant.MailersendApiKey)
+	if err != nil {
+		return "", err
+	}
+
+	emailTemplateID, err := firestore.GetValue(constant.EmailTemplateID)
+	if err != nil {
+		return "", err
+	}
+
+	ms := mailersend.NewMailersend(mailersendApiKey)
 
 	subject := constant.SenderSubject
 	from := getFromSender()
@@ -21,7 +31,7 @@ func SendMail(ctx context.Context, quote quotes.Quote) (string, error) {
 	message.SetFrom(from)
 	message.SetRecipients(recipients)
 	message.SetSubject(subject)
-	message.SetTemplateID(os.Getenv(constant.EmailTemplateID))
+	message.SetTemplateID(emailTemplateID)
 	message.SetSubstitutions(variables)
 	message.SetPersonalization(personalization)
 

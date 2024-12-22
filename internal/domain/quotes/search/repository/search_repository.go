@@ -7,7 +7,7 @@ import (
 
 func GetQuoteByID(quoteID int64) (quotes.Quote, error) {
 	resultQuote, err := mysql.ClientDB.Query(
-		"SELECT quote_id, author, work, phrase, date_created FROM `quotes`.`quotes` WHERE quote_id = ?", quoteID)
+		"SELECT quote_id, author, work, phrase, date_created FROM quotes WHERE quote_id = ?", quoteID)
 	if err != nil {
 		return quotes.Quote{}, err
 	}

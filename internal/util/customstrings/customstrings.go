@@ -48,5 +48,7 @@ func RemoveSpecialCharacters(value string) string {
 		value = strings.Replace(value, "]", "", -1)
 	}
 
-	return strings.ToLower(value)
+	value = strings.ToLower(value)
+
+	return strings.TrimSpace(value)
 }

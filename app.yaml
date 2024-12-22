@@ -4,11 +4,4 @@ instance_class: F1
 service: default
 
 env_variables:
-  INSTANCE_CONNECTION_NAME:
-  DB_NAME:
-  DB_USER:
-  DB_PASS:
-  CORS_ORIGIN:
-  EMAIL_TEMPLATE_ID:
-  MAILERSEND_API_KEY:
-  CHAT_GPT_KEY:
+  PROJECT_ID: quotes-api-100
