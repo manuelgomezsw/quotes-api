@@ -14,12 +14,14 @@ El proyecto tiene dos respositorios donde se almacenan los valores configurables
 Para desplegar, seguir los siguientes pasos:
 1. Refrescar token de auth con GCP: `gcloud auth login`.
 2. Se debe garantizar que el proyecto `quotes-api-100` esté por defecto seleccionado, para verificar `gcloud config configurations list`. Ahora, de no estarlo predefinido, ejecutar el siguiente comando `gcloud config set project quotes-api-100`.
+3. 3. Garantizar que en el file `app.yaml` la llave `service` tenga el valor `default`.
 3. Ejecutar `gcloud app deploy` y seguir los pasos que allí aparecen, según convenga.
 
 ## Desplegar Daily Quote Job
 Para desplegar, seguir los siguientes pasos:
 1. Refrescar token de auth con GCP: `gcloud auth login`.
-2. Se debe garantizar que el proyecto `quotes-api-101` esté por defecto seleccionado, para verificar `gcloud config configurations list`. Ahora, de no estarlo predefinido, ejecutar el siguiente comando `gcloud config set project quotes-api-101`.
+2. Se debe garantizar que el proyecto `quotes-api-100` esté por defecto seleccionado, para verificar `gcloud config configurations list`. Ahora, de no estarlo predefinido, ejecutar el siguiente comando `gcloud config set project quotes-api-100`.
+3. Garantizar que en el file `app.yaml` la llave `service` tenga el valor `daily-quote`.
 3. Ejecutar `gcloud app deploy` y seguir los pasos que allí aparecen, según convenga.
 
 ## Referencias
