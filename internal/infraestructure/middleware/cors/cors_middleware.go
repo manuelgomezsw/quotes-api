@@ -11,7 +11,7 @@ type corsMiddleware struct{}
 func (t corsMiddleware) Execute() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		corsOriginValue, err := firestore.GetValue("CORS_ORIGIN")
-		if err == nil {
+		if err != nil {
 			return
 		}
 

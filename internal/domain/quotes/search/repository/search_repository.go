@@ -89,17 +89,17 @@ func GetQuotesByWork(work string) ([]quotes.Quote, error) {
 	return quotesSearched, nil
 }
 
-func GetTopics() ([]quotes.Tag, error) {
+func GetTopics() ([]string, error) {
 	resultTopics, err := mysql.ClientDB.Query("SELECT DISTINCT tag FROM tags t ORDER BY tag")
 	if err != nil {
 		return nil, err
 	}
 
-	var topics []quotes.Tag
+	var topics []string
 	for resultTopics.Next() {
-		var topic quotes.Tag
+		var topic string
 
-		err = resultTopics.Scan(&topic.ID, &topic.Tag)
+		err = resultTopics.Scan(&topic)
 		if err != nil {
 			return nil, err
 		}
