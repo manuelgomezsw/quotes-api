@@ -1,0 +1,1 @@
+INSERT INTO tags (quote_id, tag) VALUES

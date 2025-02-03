@@ -4,14 +4,30 @@ import (
 	"errors"
 	"fmt"
 	sqlErr "github.com/go-mysql/errors"
+	"os"
 	"quotes-api/internal/domain/words"
 	"quotes-api/internal/util/apierror"
 	"quotes-api/internal/util/mysql"
 )
 
+const (
+	basePathSqlQueries = "sql/words"
+
+	fileSqlCreate       = "Create.sql"
+	fileSqlUpdate       = "Update.sql"
+	fileSqlDelete       = "Delete.sql"
+	fileSqlGetByID      = "GetByID.sql"
+	fileSqlGetByKeyword = "GetByKeyword.sql"
+)
+
 func Create(newWord *words.Word) apierror.ApiError {
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlCreate))
+	if err != nil {
+		return apierror.NewInternalServerApiError("error getting sql file", err)
+	}
+
 	newRecord, err := mysql.ClientDB.Exec(
-		"INSERT INTO quotes.words (word, meaning) VALUES (?, ?)",
+		string(query),
 		newWord.Word,
 		newWord.Meaning,
 	)
@@ -34,8 +50,13 @@ func Create(newWord *words.Word) apierror.ApiError {
 }
 
 func Update(currentWord *words.Word) error {
-	_, err := mysql.ClientDB.Exec(
-		"UPDATE quotes.words SET word = ?, meaning = ?  WHERE word_id = ?",
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlUpdate))
+	if err != nil {
+		return err
+	}
+
+	_, err = mysql.ClientDB.Exec(
+		string(query),
 		currentWord.Word,
 		currentWord.Meaning,
 		currentWord.WordID,
@@ -48,8 +69,13 @@ func Update(currentWord *words.Word) error {
 }
 
 func Delete(wordID int64) error {
-	_, err := mysql.ClientDB.Exec(
-		"DELETE FROM quotes.words WHERE word_id = ?",
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlDelete))
+	if err != nil {
+		return err
+	}
+
+	_, err = mysql.ClientDB.Exec(
+		string(query),
 		wordID,
 	)
 	if err != nil {
@@ -60,8 +86,12 @@ func Delete(wordID int64) error {
 }
 
 func GetByID(wordID int64) (words.Word, error) {
-	resultWord, err := mysql.ClientDB.Query(
-		"SELECT word_id, word, meaning, date_created FROM quotes.words WHERE word_id = ?", wordID)
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetByID))
+	if err != nil {
+		return words.Word{}, err
+	}
+
+	resultWord, err := mysql.ClientDB.Query(string(query), wordID)
 	if err != nil {
 		return words.Word{}, err
 	}
@@ -78,9 +108,13 @@ func GetByID(wordID int64) (words.Word, error) {
 }
 
 func GetByKeyword(word string) ([]words.Word, error) {
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetByKeyword))
+	if err != nil {
+		return nil, err
+	}
+
 	keywordQuery := "%" + word + "%"
-	resultWord, err := mysql.ClientDB.Query(
-		"SELECT word_id, word, meaning, date_created FROM quotes.words WHERE word LIKE ? OR meaning LIKE ?", keywordQuery, keywordQuery)
+	resultWord, err := mysql.ClientDB.Query(string(query), keywordQuery, keywordQuery)
 	if err != nil {
 		return nil, err
 	}

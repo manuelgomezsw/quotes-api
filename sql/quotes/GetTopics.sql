@@ -1,0 +1,3 @@
+SELECT DISTINCT tag
+FROM tags t
+ORDER BY tag

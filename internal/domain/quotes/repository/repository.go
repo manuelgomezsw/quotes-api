@@ -1,14 +1,37 @@
 package repository
 
 import (
+	"fmt"
+	"os"
 	"quotes-api/internal/domain/quotes"
 	"quotes-api/internal/util/mysql"
 	"strings"
 )
 
+const (
+	basePathSqlQueries = "sql/quotes"
+
+	fileSqlCreateQuote        = "CreateQuote.sql"
+	fileSqlUpdateQuote        = "UpdateQuote.sql"
+	fileSqlDeleteQuote        = "DeleteQuote.sql"
+	fileSqlGetQuoteByID       = "GetQuoteByID.sql"
+	fileSqlGetQuotesByKeyword = "GetQuotesByKeyword.sql"
+	fileSqlGetQuotesByAuthor  = "GetQuotesByAuthor.sql"
+	fileSqlGetQuotesByWork    = "GetQuotesByWork.sql"
+	fileSqlGetTopics          = "GetTopics.sql"
+	fileSqlGetDailyQuote      = "GetDailyQuote.sql"
+	fileSqlCreateTags         = "CreateTags.sql"
+	fileSqlDeleteTags         = "DeleteTags.sql"
+)
+
 func CreateQuote(newQuote *quotes.Quote) error {
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlCreateQuote))
+	if err != nil {
+		return err
+	}
+
 	newRecord, err := mysql.ClientDB.Exec(
-		"INSERT INTO quotes (author, work, phrase) VALUES (?, ?, ?)",
+		string(query),
 		newQuote.Author,
 		newQuote.Work,
 		newQuote.Phrase,
@@ -32,8 +55,13 @@ func CreateQuote(newQuote *quotes.Quote) error {
 }
 
 func UpdateQuote(quoteID int64, currentQuote *quotes.Quote) error {
-	_, err := mysql.ClientDB.Exec(
-		"UPDATE `quotes`.`quotes` SET author = ?, work = ?, phrase = ?  WHERE quote_id = ?",
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlUpdateQuote))
+	if err != nil {
+		return err
+	}
+
+	_, err = mysql.ClientDB.Exec(
+		string(query),
 		currentQuote.Author,
 		currentQuote.Work,
 		currentQuote.Phrase,
@@ -57,8 +85,13 @@ func UpdateQuote(quoteID int64, currentQuote *quotes.Quote) error {
 }
 
 func DeleteQuote(quoteID int64) error {
-	_, err := mysql.ClientDB.Exec(
-		"DELETE FROM `quotes`.`quotes` WHERE quote_id = ?",
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlDeleteQuote))
+	if err != nil {
+		return err
+	}
+
+	_, err = mysql.ClientDB.Exec(
+		string(query),
 		quoteID,
 	)
 	if err != nil {
@@ -69,8 +102,12 @@ func DeleteQuote(quoteID int64) error {
 }
 
 func GetQuoteByID(quoteID int64) (quotes.Quote, error) {
-	resultQuote, err := mysql.ClientDB.Query(
-		"SELECT quote_id, author, work, phrase, date_created FROM quotes WHERE quote_id = ?", quoteID)
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetQuoteByID))
+	if err != nil {
+		return quotes.Quote{}, err
+	}
+
+	resultQuote, err := mysql.ClientDB.Query(string(query), quoteID)
 	if err != nil {
 		return quotes.Quote{}, err
 	}
@@ -87,8 +124,12 @@ func GetQuoteByID(quoteID int64) (quotes.Quote, error) {
 }
 
 func GetQuotesByKeyword(keyword string) ([]quotes.Quote, error) {
-	resultQuote, err := mysql.ClientDB.Query(
-		"SELECT q.quote_id, q.author, q.work, q.phrase, q.date_created FROM quotes q JOIN tags t ON q.quote_id = t.quote_id WHERE t.tag LIKE ?", "%"+keyword+"%")
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetQuotesByKeyword))
+	if err != nil {
+		return nil, err
+	}
+
+	resultQuote, err := mysql.ClientDB.Query(string(query), "%"+keyword+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -109,8 +150,12 @@ func GetQuotesByKeyword(keyword string) ([]quotes.Quote, error) {
 }
 
 func GetQuotesByAuthor(author string) ([]quotes.Quote, error) {
-	resultQuote, err := mysql.ClientDB.Query(
-		"SELECT quote_id, author, work, phrase, date_created FROM `quotes`.`quotes` WHERE author LIKE ?", "%"+author+"%")
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetQuotesByAuthor))
+	if err != nil {
+		return nil, err
+	}
+
+	resultQuote, err := mysql.ClientDB.Query(string(query), "%"+author+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -131,8 +176,12 @@ func GetQuotesByAuthor(author string) ([]quotes.Quote, error) {
 }
 
 func GetQuotesByWork(work string) ([]quotes.Quote, error) {
-	resultQuote, err := mysql.ClientDB.Query(
-		"SELECT quote_id, author, work, phrase, date_created FROM `quotes`.`quotes` WHERE work LIKE ?", "%"+work+"%")
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetQuotesByWork))
+	if err != nil {
+		return nil, err
+	}
+
+	resultQuote, err := mysql.ClientDB.Query(string(query), "%"+work+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +202,12 @@ func GetQuotesByWork(work string) ([]quotes.Quote, error) {
 }
 
 func GetTopics() ([]string, error) {
-	resultTopics, err := mysql.ClientDB.Query("SELECT DISTINCT tag FROM tags t ORDER BY tag")
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetTopics))
+	if err != nil {
+		return nil, err
+	}
+
+	resultTopics, err := mysql.ClientDB.Query(string(query))
 	if err != nil {
 		return nil, err
 	}
@@ -174,15 +228,19 @@ func GetTopics() ([]string, error) {
 }
 
 func GetDailyQuote() (quotes.Quote, error) {
-	resultQuote, err := mysql.ClientDB.Query(
-		"SELECT author, work, phrase, date_created FROM `quotes`.`quotes` ORDER BY RAND() LIMIT 1;")
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetDailyQuote))
+	if err != nil {
+		return quotes.Quote{}, err
+	}
+
+	randomQuote, err := mysql.ClientDB.Query(string(query))
 	if err != nil {
 		return quotes.Quote{}, err
 	}
 
 	var quote quotes.Quote
-	for resultQuote.Next() {
-		err = resultQuote.Scan(&quote.Author, &quote.Work, &quote.Phrase, &quote.DateCreated)
+	for randomQuote.Next() {
+		err = randomQuote.Scan(&quote.Author, &quote.Work, &quote.Phrase, &quote.DateCreated)
 		if err != nil {
 			return quotes.Quote{}, err
 		}
@@ -192,7 +250,12 @@ func GetDailyQuote() (quotes.Quote, error) {
 }
 
 func createTags(quoteID int64, tags string) error {
-	bulkInsert := "INSERT INTO tags (quote_id, tag) VALUES "
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlCreateTags))
+	if err != nil {
+		return err
+	}
+
+	bulkInsert := string(query)
 	var values []string
 	var args []interface{}
 
@@ -202,7 +265,7 @@ func createTags(quoteID int64, tags string) error {
 	}
 
 	bulkInsert += strings.Join(values, ",")
-	_, err := mysql.ClientDB.Exec(bulkInsert, args...)
+	_, err = mysql.ClientDB.Exec(bulkInsert, args...)
 	if err != nil {
 		return err
 	}
@@ -210,8 +273,13 @@ func createTags(quoteID int64, tags string) error {
 }
 
 func deleteTags(quoteID int64) error {
-	_, err := mysql.ClientDB.Exec(
-		"DELETE FROM tags WHERE quote_id = ?",
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlDeleteTags))
+	if err != nil {
+		return err
+	}
+
+	_, err = mysql.ClientDB.Exec(
+		string(query),
 		quoteID,
 	)
 	if err != nil {

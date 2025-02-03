@@ -1,13 +1,30 @@
 package repository
 
 import (
+	"fmt"
+	"os"
 	"quotes-api/internal/domain/reviews"
 	"quotes-api/internal/util/mysql"
 )
 
+const (
+	basePathSqlQueries = "sql/reviews"
+
+	fileSqlCreate     = "Create.sql"
+	fileSqlUpdate     = "Update.sql"
+	fileSqlDelete     = "Delete.sql"
+	fileSqlGetByID    = "GetByID.sql"
+	fileSqlGetByTitle = "GetByTitle.sql"
+)
+
 func Create(newReview *reviews.Review) error {
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlCreate))
+	if err != nil {
+		return err
+	}
+
 	newRecord, err := mysql.ClientDB.Exec(
-		"INSERT INTO quotes.reviews (title, review) VALUES (?, ?)",
+		string(query),
 		newReview.Title,
 		newReview.Review,
 	)
@@ -24,8 +41,13 @@ func Create(newReview *reviews.Review) error {
 }
 
 func Update(currentReview *reviews.Review) error {
-	_, err := mysql.ClientDB.Exec(
-		"UPDATE quotes.reviews SET title = ?, review = ?  WHERE review_id = ?",
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlUpdate))
+	if err != nil {
+		return err
+	}
+
+	_, err = mysql.ClientDB.Exec(
+		string(query),
 		currentReview.Title,
 		currentReview.Review,
 		currentReview.ReviewID,
@@ -38,8 +60,13 @@ func Update(currentReview *reviews.Review) error {
 }
 
 func Delete(reviewID int64) error {
-	_, err := mysql.ClientDB.Exec(
-		"DELETE FROM quotes.reviews WHERE review_id = ?",
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlDelete))
+	if err != nil {
+		return err
+	}
+
+	_, err = mysql.ClientDB.Exec(
+		string(query),
 		reviewID,
 	)
 	if err != nil {
@@ -50,8 +77,12 @@ func Delete(reviewID int64) error {
 }
 
 func GetByID(reviewID int64) (reviews.Review, error) {
-	resultReview, err := mysql.ClientDB.Query(
-		"SELECT review_id, title, review, date_created FROM quotes.reviews WHERE review_id = ?", reviewID)
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetByID))
+	if err != nil {
+		return reviews.Review{}, err
+	}
+
+	resultReview, err := mysql.ClientDB.Query(string(query), reviewID)
 	if err != nil {
 		return reviews.Review{}, err
 	}
@@ -68,8 +99,12 @@ func GetByID(reviewID int64) (reviews.Review, error) {
 }
 
 func GetByTitle(title string) ([]reviews.Review, error) {
-	resultReview, err := mysql.ClientDB.Query(
-		"SELECT review_id, title, review, date_created FROM quotes.reviews WHERE title LIKE ?", "%"+title+"%")
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetByTitle))
+	if err != nil {
+		return nil, err
+	}
+
+	resultReview, err := mysql.ClientDB.Query(string(query), "%"+title+"%")
 	if err != nil {
 		return nil, err
 	}
