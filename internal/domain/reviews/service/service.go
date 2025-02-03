@@ -1,8 +1,8 @@
-package services
+package service
 
 import (
 	"quotes-api/internal/domain/reviews"
-	"quotes-api/internal/domain/reviews/registry/repository"
+	"quotes-api/internal/domain/reviews/repository"
 	"strings"
 )
 
@@ -32,6 +32,24 @@ func Delete(reviewID int64) error {
 	}
 
 	return nil
+}
+
+func GetByID(reviewID int64) (reviews.Review, error) {
+	review, err := repository.GetByID(reviewID)
+	if err != nil {
+		return reviews.Review{}, err
+	}
+
+	return review, nil
+}
+
+func GetByTitle(title string) ([]reviews.Review, error) {
+	reviewsByTitle, err := repository.GetByTitle(title)
+	if err != nil {
+		return nil, err
+	}
+
+	return reviewsByTitle, nil
 }
 
 func formatReview(review *reviews.Review) {

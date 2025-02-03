@@ -1,13 +1,15 @@
-package services
+package service
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"quotes-api/internal/domain/quotes"
-	"quotes-api/internal/domain/quotes/registry/repository"
+	"quotes-api/internal/domain/quotes/repository"
 	"quotes-api/internal/infraestructure/client/firestore"
+	"quotes-api/internal/infraestructure/client/mailersend"
 	"quotes-api/internal/infraestructure/client/secretmanager"
 	"quotes-api/internal/util/constant"
 	"quotes-api/internal/util/customstrings"
@@ -47,6 +49,68 @@ func DeleteQuoteService(quoteID int64) error {
 	}
 
 	return nil
+}
+
+func GetQuoteByID(quoteID int64) (quotes.Quote, error) {
+	quote, err := repository.GetQuoteByID(quoteID)
+	if err != nil {
+		return quotes.Quote{}, err
+	}
+
+	return quote, nil
+}
+
+func GetQuotesByKeyword(keyword string) ([]quotes.Quote, error) {
+	quote, err := repository.GetQuotesByKeyword(keyword)
+	if err != nil {
+		return nil, err
+	}
+
+	return quote, nil
+}
+
+func GetQuotesByAuthor(author string) ([]quotes.Quote, error) {
+	quote, err := repository.GetQuotesByAuthor(author)
+	if err != nil {
+		return nil, err
+	}
+
+	return quote, nil
+}
+
+func GetQuotesByWork(work string) ([]quotes.Quote, error) {
+	quote, err := repository.GetQuotesByWork(work)
+	if err != nil {
+		return nil, err
+	}
+
+	return quote, nil
+}
+
+func GetTopics() ([]string, error) {
+	return repository.GetTopics()
+}
+
+func SendDailyQuote(ctx context.Context) (string, error) {
+	dailyQuote, err := repository.GetDailyQuote()
+	if err != nil {
+		return "", err
+	}
+
+	completeDataDailyQuote(&dailyQuote)
+
+	confirmationID, err := mailersend.SendMail(ctx, dailyQuote)
+	if err != nil {
+		return "", err
+	}
+
+	return confirmationID, nil
+}
+
+func completeDataDailyQuote(quote *quotes.Quote) {
+	if quote.Author == "" {
+		quote.Author = constant.Desconocido
+	}
 }
 
 func formatQuote(quote *quotes.Quote, keywords string) {

@@ -1,4 +1,4 @@
-package contract
+package quotes
 
 type Recipient struct {
 	Name  string `json:"name"`
