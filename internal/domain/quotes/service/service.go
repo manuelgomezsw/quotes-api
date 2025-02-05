@@ -91,6 +91,14 @@ func GetTopics() ([]string, error) {
 	return repository.GetTopics()
 }
 
+func GetAuthors() ([]string, error) {
+	return repository.GetAuthors()
+}
+
+func GetWorks() ([]string, error) {
+	return repository.GetWorks()
+}
+
 func SendDailyQuote(ctx context.Context) (string, error) {
 	dailyQuote, err := repository.GetDailyQuote()
 	if err != nil {

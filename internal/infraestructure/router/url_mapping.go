@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"quotes-api/internal/infraestructure/controller/misc"
 	"quotes-api/internal/infraestructure/controller/quotes"
 	"quotes-api/internal/infraestructure/controller/reviews"
 	"quotes-api/internal/infraestructure/controller/words"
@@ -11,6 +12,7 @@ func mapURLs(router *gin.Engine) {
 	quotesUrls(router)
 	wordsUrls(router)
 	reviewsUrls(router)
+	miscUrls(router)
 }
 
 func quotesUrls(router *gin.Engine) {
@@ -50,4 +52,9 @@ func reviewsUrls(router *gin.Engine) {
 	// Search reviews
 	router.GET("/reviews/:review_id", reviews.GetByID)
 	router.GET("/reviews/title/:title", reviews.GetByTitle)
+}
+
+func miscUrls(router *gin.Engine) {
+	router.GET("/authors", misc.GetAuthors)
+	router.GET("/works", misc.GetWorks)
 }

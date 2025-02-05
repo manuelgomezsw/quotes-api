@@ -20,6 +20,8 @@ const (
 	fileSqlGetQuotesByWork    = "GetQuotesByWork.sql"
 	fileSqlGetTopics          = "GetTopics.sql"
 	fileSqlGetDailyQuote      = "GetDailyQuote.sql"
+	fileSqlGetAuthors         = "GetAuthors.sql"
+	fileSqlGetWorks           = "GetWorks.sql"
 	fileSqlCreateTags         = "CreateTags.sql"
 	fileSqlDeleteTags         = "DeleteTags.sql"
 )
@@ -247,6 +249,58 @@ func GetDailyQuote() (quotes.Quote, error) {
 	}
 
 	return quote, nil
+}
+
+func GetAuthors() ([]string, error) {
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetAuthors))
+	if err != nil {
+		return nil, err
+	}
+
+	resultTopics, err := mysql.ClientDB.Query(string(query))
+	if err != nil {
+		return nil, err
+	}
+
+	var topics []string
+	for resultTopics.Next() {
+		var topic string
+
+		err = resultTopics.Scan(&topic)
+		if err != nil {
+			return nil, err
+		}
+
+		topics = append(topics, topic)
+	}
+
+	return topics, nil
+}
+
+func GetWorks() ([]string, error) {
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetWorks))
+	if err != nil {
+		return nil, err
+	}
+
+	resultTopics, err := mysql.ClientDB.Query(string(query))
+	if err != nil {
+		return nil, err
+	}
+
+	var topics []string
+	for resultTopics.Next() {
+		var topic string
+
+		err = resultTopics.Scan(&topic)
+		if err != nil {
+			return nil, err
+		}
+
+		topics = append(topics, topic)
+	}
+
+	return topics, nil
 }
 
 func createTags(quoteID int64, tags string) error {

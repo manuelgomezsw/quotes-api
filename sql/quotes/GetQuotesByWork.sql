@@ -5,3 +5,4 @@ SELECT quote_id,
        date_created
 FROM quotes
 WHERE work LIKE ?
+ORDER BY date_created DESC

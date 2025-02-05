@@ -1,0 +1,3 @@
+SELECT DISTINCT work
+FROM quotes
+ORDER BY work

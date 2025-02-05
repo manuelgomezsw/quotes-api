@@ -6,3 +6,4 @@ SELECT q.quote_id,
 FROM quotes q
          JOIN tags t ON q.quote_id = t.quote_id
 WHERE t.tag LIKE ?
+ORDER BY date_created DESC
