@@ -2,15 +2,15 @@ package service
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"quotes-api/internal/domain/quotes"
 	"quotes-api/internal/domain/quotes/repository"
 	"quotes-api/internal/infraestructure/client/firestore"
-	"quotes-api/internal/infraestructure/client/mailersend"
 	"quotes-api/internal/infraestructure/client/secretmanager"
+	"quotes-api/internal/util/cache"
 	"quotes-api/internal/util/constant"
 	"quotes-api/internal/util/customstrings"
 )
@@ -99,26 +99,24 @@ func GetWorks() ([]string, error) {
 	return repository.GetWorks()
 }
 
-func SendDailyQuote(ctx context.Context) (string, error) {
-	dailyQuote, err := repository.GetDailyQuote()
+func GetRandomQuote() (quotes.Quote, error) {
+	item, err := cache.GetRandomItem("quote", getQuoteByIDWrapper, repository.GetMinMaxQuotes)
 	if err != nil {
-		return "", err
+		return quotes.Quote{}, err
 	}
 
-	completeDataDailyQuote(&dailyQuote)
-
-	confirmationID, err := mailersend.SendMail(ctx, dailyQuote)
-	if err != nil {
-		return "", err
+	// Convertimos el item a quotes.Quote
+	quote, ok := item.(quotes.Quote)
+	if !ok {
+		return quotes.Quote{}, errors.New("error de conversión al tipo Quote")
 	}
 
-	return confirmationID, nil
+	return quote, nil
 }
 
-func completeDataDailyQuote(quote *quotes.Quote) {
-	if quote.Author == "" {
-		quote.Author = constant.Desconocido
-	}
+// Wrapper para adaptar GetQuoteByID al tipo esperado por GetRandomItem
+func getQuoteByIDWrapper(quoteID int64) (interface{}, error) {
+	return GetQuoteByID(quoteID) // Retorna un `quotes.Quote`, que es compatible con `interface{}`
 }
 
 func formatQuote(quote *quotes.Quote, keywords string) {

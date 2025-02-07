@@ -1,7 +1,7 @@
 runtime: go123
 
 instance_class: F1
-service: daily-quote
+service: default
 
 env_variables:
   PROJECT_ID: quotes-api-100

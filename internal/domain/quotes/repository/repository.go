@@ -19,7 +19,7 @@ const (
 	fileSqlGetQuotesByAuthor  = "GetQuotesByAuthor.sql"
 	fileSqlGetQuotesByWork    = "GetQuotesByWork.sql"
 	fileSqlGetTopics          = "GetTopics.sql"
-	fileSqlGetDailyQuote      = "GetDailyQuote.sql"
+	fileSqlGetMinMaxQuotes    = "GetMinMaxQuotes.sql"
 	fileSqlGetAuthors         = "GetAuthors.sql"
 	fileSqlGetWorks           = "GetWorks.sql"
 	fileSqlCreateTags         = "CreateTags.sql"
@@ -229,26 +229,26 @@ func GetTopics() ([]string, error) {
 	return topics, nil
 }
 
-func GetDailyQuote() (quotes.Quote, error) {
-	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetDailyQuote))
+func GetMinMaxQuotes() (int64, int64, error) {
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetMinMaxQuotes))
 	if err != nil {
-		return quotes.Quote{}, err
+		return 0, 0, err
 	}
 
-	randomQuote, err := mysql.ClientDB.Query(string(query))
+	resultQuotes, err := mysql.ClientDB.Query(string(query))
 	if err != nil {
-		return quotes.Quote{}, err
+		return 0, 0, err
 	}
 
-	var quote quotes.Quote
-	for randomQuote.Next() {
-		err = randomQuote.Scan(&quote.Author, &quote.Work, &quote.Phrase, &quote.DateCreated)
+	var minQuoteID, maxQuoteID int64
+	for resultQuotes.Next() {
+		err = resultQuotes.Scan(&minQuoteID, &maxQuoteID)
 		if err != nil {
-			return quotes.Quote{}, err
+			return 0, 0, err
 		}
 	}
 
-	return quote, nil
+	return minQuoteID, maxQuoteID, nil
 }
 
 func GetAuthors() ([]string, error) {

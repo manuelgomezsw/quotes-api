@@ -40,3 +40,6 @@ Para instalar se puede seguir la documentación de referencia de [google](https:
 Puede ocurrir que la carpeta `.config` que es donde se almacena la credencial del proxy de SQLConnect tenga permisos solo para root y desde el IDE no se pueda ejecutar y saque un error de este tipo `connectConnector: unable to connect: cloudsqlconn.NewDialer: failed to create token source: google: could not find default credentials.`. Para esto, ejecutar el siguiente comando que dará permisos al usuario actual:
 `sudo chown -R $(whoami) ~/.config
     chmod -R u+rwx ~/.config`.
+
+### Librerías
+1. Ristretto Caché: `go get github.com/dgraph-io/ristretto`.

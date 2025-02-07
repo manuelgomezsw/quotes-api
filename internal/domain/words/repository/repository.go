@@ -13,11 +13,12 @@ import (
 const (
 	basePathSqlQueries = "sql/words"
 
-	fileSqlCreate       = "Create.sql"
-	fileSqlUpdate       = "Update.sql"
-	fileSqlDelete       = "Delete.sql"
-	fileSqlGetByID      = "GetByID.sql"
-	fileSqlGetByKeyword = "GetByKeyword.sql"
+	fileSqlCreate         = "Create.sql"
+	fileSqlUpdate         = "Update.sql"
+	fileSqlDelete         = "Delete.sql"
+	fileSqlGetByID        = "GetByID.sql"
+	fileSqlGetByKeyword   = "GetByKeyword.sql"
+	fileSqlGetMinMaxWords = "GetMinMaxWords.sql"
 )
 
 func Create(newWord *words.Word) apierror.ApiError {
@@ -132,4 +133,26 @@ func GetByKeyword(word string) ([]words.Word, error) {
 	}
 
 	return quotes, nil
+}
+
+func GetMinMaxWords() (int64, int64, error) {
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetMinMaxWords))
+	if err != nil {
+		return 0, 0, err
+	}
+
+	resultWord, err := mysql.ClientDB.Query(string(query))
+	if err != nil {
+		return 0, 0, err
+	}
+
+	var minWordID, maxWordID int64
+	for resultWord.Next() {
+		err = resultWord.Scan(&minWordID, &maxWordID)
+		if err != nil {
+			return 0, 0, err
+		}
+	}
+
+	return minWordID, maxWordID, nil
 }

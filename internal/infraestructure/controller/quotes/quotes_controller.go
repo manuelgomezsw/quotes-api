@@ -200,18 +200,15 @@ func GetTopics(c *gin.Context) {
 	c.JSON(http.StatusOK, quotesByTopic)
 }
 
-func SendDailyQuote(c *gin.Context) {
-	confirmationID, err := service.SendDailyQuote(c)
+func GetRandomQuote(c *gin.Context) {
+	randomQuote, err := service.GetRandomQuote()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error sending daily quote",
+			"message": "Error getting random quote",
 			"error":   err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":          "processed",
-		"confirmation_id": confirmationID,
-	})
+	c.JSON(http.StatusOK, randomQuote)
 }

@@ -129,3 +129,16 @@ func GetByKeyword(c *gin.Context) {
 
 	c.JSON(http.StatusOK, keyword)
 }
+
+func GetRandomWord(c *gin.Context) {
+	randomWord, err := service.GetRandomWord()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error getting random word",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, randomWord)
+}

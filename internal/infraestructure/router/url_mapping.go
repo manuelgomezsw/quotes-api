@@ -27,9 +27,7 @@ func quotesUrls(router *gin.Engine) {
 	router.GET("/quotes/work/:work", quotes.GetQuotesByWork)
 	router.GET("/quotes/keyword/:keyword", quotes.GetQuotesByKeyword)
 	router.GET("/quotes/topics", quotes.GetTopics)
-
-	// Daily job quotes
-	router.POST("/quotes/daily", quotes.SendDailyQuote)
+	router.GET("/quotes/random", quotes.GetRandomQuote)
 }
 
 func wordsUrls(router *gin.Engine) {
@@ -41,6 +39,7 @@ func wordsUrls(router *gin.Engine) {
 	// Search words
 	router.GET("/words/:word_id", words.GetByID)
 	router.GET("/words/keyword/:keyword", words.GetByKeyword)
+	router.GET("/words/random", words.GetRandomWord)
 }
 
 func reviewsUrls(router *gin.Engine) {

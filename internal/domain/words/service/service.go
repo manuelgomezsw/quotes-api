@@ -1,9 +1,11 @@
 package service
 
 import (
+	"errors"
 	"quotes-api/internal/domain/words"
 	"quotes-api/internal/domain/words/repository"
 	"quotes-api/internal/util/apierror"
+	"quotes-api/internal/util/cache"
 	"strings"
 )
 
@@ -51,6 +53,26 @@ func GetByKeyword(keyword string) ([]words.Word, error) {
 	}
 
 	return quote, nil
+}
+
+func GetRandomWord() (words.Word, error) {
+	item, err := cache.GetRandomItem("quote", getWordByIDWrapper, repository.GetMinMaxWords)
+	if err != nil {
+		return words.Word{}, err
+	}
+
+	// Convertimos el item a quotes.Quote
+	word, ok := item.(words.Word)
+	if !ok {
+		return words.Word{}, errors.New("error de conversión al tipo word")
+	}
+
+	return word, nil
+}
+
+// Wrapper para adaptar GetByID al tipo esperado por GetRandomItem
+func getWordByIDWrapper(quoteID int64) (interface{}, error) {
+	return GetByID(quoteID) // Retorna un `words.Word`, que es compatible con `interface{}`
 }
 
 func formatWord(word *words.Word) {
