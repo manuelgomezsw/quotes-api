@@ -7,6 +7,13 @@ import (
 	"time"
 )
 
+var rng *rand.Rand
+
+func init() {
+	rand.NewSource(time.Now().UnixNano())
+	rng = rand.New(rand.NewSource(time.Now().UnixNano()))
+}
+
 // GetRandomItem obtiene un ID aleatorio de una colección, utilizando la caché.
 func GetRandomItem(cachePrefix string, getItemByID func(int64) (interface{}, error), loadMinMaxFromDB func() (int64, int64, error)) (interface{}, error) {
 	// Obtener valores mínimo y máximo desde la caché
@@ -15,11 +22,11 @@ func GetRandomItem(cachePrefix string, getItemByID func(int64) (interface{}, err
 		return nil, err
 	}
 
-	rand.NewSource(time.Now().UnixNano())
+	rangeVal := maxID - minID + 1
 
 	// Intentar encontrar un elemento válido
 	for {
-		randomID := rand.Int63n(maxID-minID+1) + minID
+		randomID := rng.Int63n(rangeVal) + minID
 
 		item, err := getItemByID(randomID)
 		if err != nil {
