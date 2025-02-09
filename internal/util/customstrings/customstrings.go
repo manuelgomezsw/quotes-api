@@ -1,6 +1,10 @@
 package customstrings
 
-import "strings"
+import (
+	"strings"
+	"unicode"
+	"unicode/utf8"
+)
 
 func TrimSpace(value string) string {
 	if value == "" {
@@ -51,4 +55,14 @@ func RemoveSpecialCharacters(value string) string {
 	value = strings.ToLower(value)
 
 	return strings.TrimSpace(value)
+}
+
+// CapitalizeFirst convierte la primera letra de s en mayúscula.
+func CapitalizeFirst(s string) string {
+	if s == "" {
+		return s
+	}
+	r, size := utf8.DecodeRuneInString(s)
+
+	return string(unicode.ToUpper(r)) + s[size:]
 }

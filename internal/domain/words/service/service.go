@@ -6,6 +6,7 @@ import (
 	"quotes-api/internal/domain/words/repository"
 	"quotes-api/internal/util/apierror"
 	"quotes-api/internal/util/cache"
+	"quotes-api/internal/util/customstrings"
 	"strings"
 )
 
@@ -66,6 +67,8 @@ func GetRandomWord() (words.Word, error) {
 	if !ok {
 		return words.Word{}, errors.New("error de conversión al tipo word")
 	}
+
+	word.Word = customstrings.CapitalizeFirst(word.Word)
 
 	return word, nil
 }

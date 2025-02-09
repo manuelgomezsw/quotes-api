@@ -3,6 +3,7 @@ package cache
 import (
 	"log"
 	"math/rand"
+	"reflect"
 	"time"
 )
 
@@ -14,7 +15,6 @@ func GetRandomItem(cachePrefix string, getItemByID func(int64) (interface{}, err
 		return nil, err
 	}
 
-	// Inicializar el generador de números aleatorios solo una vez
 	rand.NewSource(time.Now().UnixNano())
 
 	// Intentar encontrar un elemento válido
@@ -23,8 +23,13 @@ func GetRandomItem(cachePrefix string, getItemByID func(int64) (interface{}, err
 
 		item, err := getItemByID(randomID)
 		if err != nil {
-			log.Printf("Error obteniendo %s con ID=%d: %v", cachePrefix, randomID, err)
-			continue // Intentar con otro ID
+			return nil, err
+		}
+
+		// Verificar si el item retornado es "vacío".
+		zeroValue := reflect.Zero(reflect.TypeOf(item)).Interface()
+		if reflect.DeepEqual(item, zeroValue) {
+			continue
 		}
 
 		return item, nil
