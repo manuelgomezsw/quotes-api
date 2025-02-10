@@ -4,3 +4,4 @@ SELECT review_id,
        date_created
 FROM reviews
 WHERE title LIKE ?
+ORDER BY date_created desc
