@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"quotes-api/internal/domain/reviews"
+	"quotes-api/internal/util/conversions"
 	"quotes-api/internal/util/mysql"
 )
 
@@ -15,6 +16,7 @@ const (
 	fileSqlDelete     = "Delete.sql"
 	fileSqlGetByID    = "GetByID.sql"
 	fileSqlGetByTitle = "GetByTitle.sql"
+	fileSqlGet        = "Get.sql"
 )
 
 func Create(newReview *reviews.Review) error {
@@ -27,12 +29,19 @@ func Create(newReview *reviews.Review) error {
 		string(query),
 		newReview.Title,
 		newReview.Review,
+		newReview.Author,
+		newReview.Source,
 	)
 	if err != nil {
 		return err
 	}
 
-	newReview.ReviewID, err = newRecord.LastInsertId()
+	lastID, err := newRecord.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	newReview.ReviewID, err = conversions.SafeIntConversion(lastID)
 	if err != nil {
 		return err
 	}
@@ -50,6 +59,8 @@ func Update(currentReview *reviews.Review) error {
 		string(query),
 		currentReview.Title,
 		currentReview.Review,
+		currentReview.Author,
+		currentReview.Source,
 		currentReview.ReviewID,
 	)
 	if err != nil {
@@ -76,6 +87,40 @@ func Delete(reviewID int64) error {
 	return nil
 }
 
+func Get() ([]reviews.Review, error) {
+	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGet))
+	if err != nil {
+		return nil, err
+	}
+
+	resultReview, err := mysql.ClientDB.Query(string(query))
+	if err != nil {
+		return nil, err
+	}
+
+	var reviewsSearched []reviews.Review
+	for resultReview.Next() {
+		var review reviews.Review
+
+		err = resultReview.Scan(
+			&review.ReviewID,
+			&review.Title,
+			&review.Review,
+			&review.Author,
+			&review.Source,
+			&review.Keywords,
+			&review.DateCreated,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		reviewsSearched = append(reviewsSearched, review)
+	}
+
+	return reviewsSearched, nil
+}
+
 func GetByID(reviewID int64) (reviews.Review, error) {
 	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetByID))
 	if err != nil {
@@ -89,7 +134,15 @@ func GetByID(reviewID int64) (reviews.Review, error) {
 
 	var review reviews.Review
 	for resultReview.Next() {
-		err = resultReview.Scan(&review.ReviewID, &review.Title, &review.Review, &review.DateCreated)
+		err = resultReview.Scan(
+			&review.ReviewID,
+			&review.Title,
+			&review.Review,
+			&review.Author,
+			&review.Source,
+			&review.Keywords,
+			&review.DateCreated,
+		)
 		if err != nil {
 			return reviews.Review{}, err
 		}
@@ -113,7 +166,15 @@ func GetByTitle(title string) ([]reviews.Review, error) {
 	for resultReview.Next() {
 		var review reviews.Review
 
-		err = resultReview.Scan(&review.ReviewID, &review.Title, &review.Review, &review.DateCreated)
+		err = resultReview.Scan(
+			&review.ReviewID,
+			&review.Title,
+			&review.Review,
+			&review.Author,
+			&review.Source,
+			&review.Keywords,
+			&review.DateCreated,
+		)
 		if err != nil {
 			return nil, err
 		}

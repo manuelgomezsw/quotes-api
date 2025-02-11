@@ -2,6 +2,8 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/sql/quotes/GetMinMaxQuotes.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/sql/reviews/Get.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/sql/reviews/GetByTitle.sql" dialect="MySQL" />
     <file url="PROJECT" dialect="MySQL" />
   </component>
 </project>

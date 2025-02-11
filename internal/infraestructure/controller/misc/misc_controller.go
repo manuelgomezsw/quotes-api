@@ -3,7 +3,7 @@ package misc
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"quotes-api/internal/domain/quotes/service"
+	"quotes-api/internal/domain/misc/service"
 )
 
 func GetAuthors(c *gin.Context) {

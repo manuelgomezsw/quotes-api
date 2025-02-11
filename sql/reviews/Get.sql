@@ -8,6 +8,5 @@ SELECT
     r.date_created
 FROM reviews r
          LEFT JOIN quotes.tags t ON r.review_id = t.review_id
-WHERE r.title LIKE ?
 GROUP BY r.review_id
 ORDER BY r.date_created DESC;

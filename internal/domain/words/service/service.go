@@ -68,7 +68,7 @@ func GetRandomWord() (words.Word, error) {
 		return words.Word{}, errors.New("error de conversión al tipo word")
 	}
 
-	word.Word = customstrings.CapitalizeFirst(word.Word)
+	word.Word = customstrings.NewStringBuilder(word.Word).CapitalizeFirst().Build()
 
 	return word, nil
 }

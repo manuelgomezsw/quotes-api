@@ -1,2 +1,2 @@
-INSERT INTO reviews (title, review)
-VALUES (?, ?)
+INSERT INTO reviews (title, review, author)
+VALUES (?, ?, ?)

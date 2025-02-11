@@ -1,0 +1,1 @@
+INSERT INTO tags (review_id, tag) VALUES

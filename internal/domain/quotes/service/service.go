@@ -1,36 +1,38 @@
 package service
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"net/http"
 	"quotes-api/internal/domain/quotes"
 	"quotes-api/internal/domain/quotes/repository"
-	"quotes-api/internal/infraestructure/client/firestore"
-	"quotes-api/internal/infraestructure/client/secretmanager"
+	tagsRepository "quotes-api/internal/domain/tags/repository"
+	"quotes-api/internal/domain/tags/service"
 	"quotes-api/internal/util/cache"
-	"quotes-api/internal/util/constant"
 	"quotes-api/internal/util/customstrings"
+	"strings"
 )
 
-func CreateQuoteService(quote *quotes.Quote) error {
-	keywords, err := getTags(quote.Phrase)
+func Create(newQuote *quotes.Quote) error {
+	keywords, err := service.GetTagsAI(newQuote.Phrase)
 	if err != nil {
 		return err
 	}
-	formatQuote(quote, keywords)
+	formatQuote(newQuote, keywords)
 
-	if err := repository.CreateQuote(quote); err != nil {
+	if err := repository.CreateQuote(newQuote); err != nil {
 		return err
+	}
+
+	if len(newQuote.Tags) > 0 {
+		if err = tagsRepository.CreateTags(newQuote.QuoteID, 0, newQuote.Tags); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func UpdateQuoteService(quoteID int64, currentQuote *quotes.Quote) error {
-	keywords, err := getTags(currentQuote.Phrase)
+func Update(quoteID int64, currentQuote *quotes.Quote) error {
+	keywords, err := service.GetTagsAI(currentQuote.Phrase)
 	if err != nil {
 		return err
 	}
@@ -40,10 +42,20 @@ func UpdateQuoteService(quoteID int64, currentQuote *quotes.Quote) error {
 		return err
 	}
 
+	if len(currentQuote.Tags) > 0 {
+		if err = tagsRepository.DeleteTags(quoteID, 0); err != nil {
+			return err
+		}
+
+		if err = tagsRepository.CreateTags(quoteID, 0, currentQuote.Tags); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-func DeleteQuoteService(quoteID int64) error {
+func Delete(quoteID int64) error {
 	if err := repository.DeleteQuote(quoteID); err != nil {
 		return err
 	}
@@ -51,52 +63,44 @@ func DeleteQuoteService(quoteID int64) error {
 	return nil
 }
 
-func GetQuoteByID(quoteID int64) (quotes.Quote, error) {
+func GetByID(quoteID int64) (quotes.Quote, error) {
 	quote, err := repository.GetQuoteByID(quoteID)
 	if err != nil {
 		return quotes.Quote{}, err
 	}
+	keywordsToTagsQuote(&quote)
 
 	return quote, nil
 }
 
-func GetQuotesByKeyword(keyword string) ([]quotes.Quote, error) {
-	quote, err := repository.GetQuotesByKeyword(keyword)
+func GetByKeyword(keyword string) ([]quotes.Quote, error) {
+	quotesByKeyword, err := repository.GetQuotesByKeyword(keyword)
 	if err != nil {
 		return nil, err
 	}
+	keywordsToTagsQuotes(quotesByKeyword)
 
-	return quote, nil
+	return quotesByKeyword, nil
 }
 
-func GetQuotesByAuthor(author string) ([]quotes.Quote, error) {
-	quote, err := repository.GetQuotesByAuthor(author)
+func GetByAuthor(author string) ([]quotes.Quote, error) {
+	quoteByAuthor, err := repository.GetQuotesByAuthor(author)
 	if err != nil {
 		return nil, err
 	}
+	keywordsToTagsQuotes(quoteByAuthor)
 
-	return quote, nil
+	return quoteByAuthor, nil
 }
 
-func GetQuotesByWork(work string) ([]quotes.Quote, error) {
-	quote, err := repository.GetQuotesByWork(work)
+func GetByWork(work string) ([]quotes.Quote, error) {
+	quotesByWork, err := repository.GetQuotesByWork(work)
 	if err != nil {
 		return nil, err
 	}
+	keywordsToTagsQuotes(quotesByWork)
 
-	return quote, nil
-}
-
-func GetTopics() ([]string, error) {
-	return repository.GetTopics()
-}
-
-func GetAuthors() ([]string, error) {
-	return repository.GetAuthors()
-}
-
-func GetWorks() ([]string, error) {
-	return repository.GetWorks()
+	return quotesByWork, nil
 }
 
 func GetRandomQuote() (quotes.Quote, error) {
@@ -110,73 +114,35 @@ func GetRandomQuote() (quotes.Quote, error) {
 	if !ok {
 		return quotes.Quote{}, errors.New("error de conversión al tipo Quote")
 	}
+	keywordsToTagsQuote(&quote)
 
 	return quote, nil
 }
 
-// Wrapper para adaptar GetQuoteByID al tipo esperado por GetRandomItem
+// getQuoteByIDWrapper adapta GetQuoteByID al tipo esperado por GetRandomItem.
 func getQuoteByIDWrapper(quoteID int64) (interface{}, error) {
-	return GetQuoteByID(quoteID) // Retorna un `quotes.Quote`, que es compatible con `interface{}`
+	return GetByID(quoteID) // Retorna un `quotes.Quote`, que es compatible con `interface{}`
 }
 
+// formatQuote limpia los caracteres especiales y espacios que retorna OpenAI.
 func formatQuote(quote *quotes.Quote, keywords string) {
-	quote.Author = customstrings.TrimSpace(quote.Author)
-	quote.Phrase = customstrings.TrimSpace(quote.Phrase)
-	quote.Work = customstrings.TrimSpace(quote.Work)
-
-	quote.Author = customstrings.RemoveEndPeriod(quote.Author)
-	quote.Work = customstrings.RemoveEndPeriod(quote.Work)
-	quote.Phrase = customstrings.RemoveEndPeriod(quote.Phrase)
-
-	quote.Tags = customstrings.RemoveSpecialCharacters(keywords)
+	quote.Author = customstrings.NewStringBuilder(quote.Author).TrimSpace().RemoveEndPeriod().CapitalizeFirst().Build()
+	quote.Phrase = customstrings.NewStringBuilder(quote.Phrase).TrimSpace().RemoveEndPeriod().CapitalizeFirst().Build()
+	quote.Work = customstrings.NewStringBuilder(quote.Work).TrimSpace().RemoveEndPeriod().CapitalizeFirst().Build()
+	quote.Tags = strings.Split(customstrings.NewStringBuilder(keywords).RemoveSpecialCharacters().Build(), ",")
 }
 
-func getTags(quote string) (string, error) {
-	client := &http.Client{}
-	requestBody, _ := json.Marshal(map[string]interface{}{
-		"model": "gpt-4o",
-		"messages": []map[string]string{
-			{"role": "user", "content": buildPrompt(quote)},
-		},
-		"temperature": 0.7,
-	})
-
-	openAIURL, err := firestore.GetValue(constant.OpenaiAPIURL)
-	if err != nil {
-		return "", err
+// keywordsToTagsQuote convierte el campo Keywords de una quote en un slice de strings y lo asigna a Tags.
+func keywordsToTagsQuote(quote *quotes.Quote) {
+	if quote == nil {
+		return
 	}
-
-	openAIApiKey, err := secretmanager.GetValue(constant.OpenaiApiKey)
-	if err != nil {
-		return "", err
-	}
-
-	req, _ := http.NewRequest("POST", openAIURL, bytes.NewBuffer(requestBody))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+openAIApiKey)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-
-	responseJSON, _ := ioutil.ReadAll(resp.Body)
-	var responseOpenAI quotes.OpenAIResponse
-
-	if err := json.Unmarshal(responseJSON, &responseOpenAI); err != nil {
-		return "", err
-	}
-
-	if len(responseOpenAI.Choices) > 0 {
-		tags := responseOpenAI.Choices[0].Message.Content
-		return tags, nil
-	} else {
-		return "", nil
-	}
+	quote.Tags = strings.Split(quote.Keywords, ",")
 }
 
-func buildPrompt(quote string) string {
-	prompt := "Extrae los 4 tags clave que mejor representan la siguiente frase. Devuélvelas como una lista, separadas por comas: " + quote
-
-	return prompt
+// keywordsToTagsQuotes recorre una slice de quotes y aplica la conversión a cada uno.
+func keywordsToTagsQuotes(quotes []quotes.Quote) {
+	for i := range quotes {
+		keywordsToTagsQuote(&quotes[i])
+	}
 }

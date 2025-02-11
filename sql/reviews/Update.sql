@@ -1,4 +1,6 @@
 UPDATE reviews
 SET title  = ?,
-    review = ?
+    review = ?,
+    author = ?,
+    source = ?
 WHERE review_id = ?

@@ -18,7 +18,7 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	if err := service.CreateQuoteService(&newQuote); err != nil {
+	if err := service.Create(&newQuote); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Error posting quote",
 			"error":   err.Error(),
@@ -48,7 +48,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	if err := service.UpdateQuoteService(quoteID, &quote); err != nil {
+	if err := service.Update(quoteID, &quote); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Error updating quote",
 			"error":   err.Error(),
@@ -69,7 +69,7 @@ func Delete(c *gin.Context) {
 		return
 	}
 
-	if err := service.DeleteQuoteService(quoteID); err != nil {
+	if err := service.Delete(quoteID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Error deleting quote",
 			"error":   err.Error(),
@@ -90,7 +90,7 @@ func GetQuoteByID(c *gin.Context) {
 		return
 	}
 
-	quote, err := service.GetQuoteByID(quoteID)
+	quote, err := service.GetByID(quoteID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Error getting quote",
@@ -115,7 +115,7 @@ func GetQuotesByKeyword(c *gin.Context) {
 		return
 	}
 
-	quotesByKeyword, err := service.GetQuotesByKeyword(c.Param("keyword"))
+	quotesByKeyword, err := service.GetByKeyword(c.Param("keyword"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Error getting quotes",
@@ -140,7 +140,7 @@ func GetQuotesByAuthor(c *gin.Context) {
 		return
 	}
 
-	quotesByAuthor, err := service.GetQuotesByAuthor(c.Param("author"))
+	quotesByAuthor, err := service.GetByAuthor(c.Param("author"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Error getting quotes",
@@ -165,7 +165,7 @@ func GetQuotesByWork(c *gin.Context) {
 		return
 	}
 
-	quotesByWork, err := service.GetQuotesByWork(c.Param("work"))
+	quotesByWork, err := service.GetByWork(c.Param("work"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Error getting quotes",
@@ -180,24 +180,6 @@ func GetQuotesByWork(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, quotesByWork)
-}
-
-func GetTopics(c *gin.Context) {
-	quotesByTopic, err := service.GetTopics()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error getting quotes",
-			"error":   err.Error(),
-		})
-		return
-	}
-
-	if quotesByTopic == nil {
-		c.JSON(http.StatusNotFound, nil)
-		return
-	}
-
-	c.JSON(http.StatusOK, quotesByTopic)
 }
 
 func GetRandomQuote(c *gin.Context) {

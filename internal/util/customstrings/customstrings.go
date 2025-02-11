@@ -6,63 +6,68 @@ import (
 	"unicode/utf8"
 )
 
-func TrimSpace(value string) string {
-	if value == "" {
-		return value
-	}
-
-	return strings.TrimSpace(value)
+// CustomString encapsula un string y permite aplicar modificaciones encadenadas.
+type StringBuilder struct {
+	s string
 }
 
-func RemoveEndPeriod(value string) string {
-	if value == "" {
-		return value
-	}
-
-	lastCharacter := value[len(value)-1:]
-	if lastCharacter == "." {
-		return value[0 : len(value)-1]
-	}
-
-	return value
+// NewStringBuilder crea una nueva instancia de StringBuilder con el string inicial.
+func NewStringBuilder(initial string) *StringBuilder {
+	return &StringBuilder{s: initial}
 }
 
-func RemoveSpecialCharacters(value string) string {
-	if value == "" {
-		return value
-	}
-
-	// Remove double quotes
-	if strings.Contains(value, "\"") {
-		value = strings.Replace(value, "\"", "", -1)
-	}
-
-	// Remove single quote
-	if strings.Contains(value, "'") {
-		value = strings.Replace(value, "'", "", -1)
-	}
-
-	// Remove open clasp
-	if strings.Contains(value, "[") {
-		value = strings.Replace(value, "[", "", -1)
-	}
-
-	// Remove closed clasp
-	if strings.Contains(value, "]") {
-		value = strings.Replace(value, "]", "", -1)
-	}
-
-	value = strings.ToLower(value)
-
-	return strings.TrimSpace(value)
+// Build devuelve el string resultante.
+func (sb *StringBuilder) Build() string {
+	return sb.s
 }
 
-// CapitalizeFirst convierte la primera letra de s en mayúscula.
-func CapitalizeFirst(s string) string {
-	if s == "" {
-		return s
-	}
-	r, size := utf8.DecodeRuneInString(s)
+// TrimSpace elimina espacios en blanco al inicio y final.
+func (sb *StringBuilder) TrimSpace() *StringBuilder {
+	sb.s = strings.TrimSpace(sb.s)
+	return sb
+}
 
-	return string(unicode.ToUpper(r)) + s[size:]
+// RemoveEndPeriod elimina el punto final si existe.
+func (sb *StringBuilder) RemoveEndPeriod() *StringBuilder {
+	if sb.s == "" {
+		return sb
+	}
+	if strings.HasSuffix(sb.s, ".") {
+		sb.s = sb.s[:len(sb.s)-1]
+	}
+	return sb
+}
+
+// RemoveSpecialCharacters elimina comillas, corchetes y convierte a minúsculas.
+func (sb *StringBuilder) RemoveSpecialCharacters() *StringBuilder {
+	if sb.s == "" {
+		return sb
+	}
+
+	// Elimina dobles comillas.
+	sb.s = strings.ReplaceAll(sb.s, "\"", "")
+	// Elimina dobles comillas cursivas.
+	sb.s = strings.ReplaceAll(sb.s, "“", "")
+	sb.s = strings.ReplaceAll(sb.s, "”", "")
+	// Elimina comillas simples.
+	sb.s = strings.ReplaceAll(sb.s, "'", "")
+	// Elimina corchetes.
+	sb.s = strings.ReplaceAll(sb.s, "[", "")
+	sb.s = strings.ReplaceAll(sb.s, "]", "")
+
+	// Convertir a minúsculas y limpiar espacios.
+	sb.s = strings.ToLower(sb.s)
+	sb.s = strings.TrimSpace(sb.s)
+
+	return sb
+}
+
+// CapitalizeFirst convierte la primera letra a mayúscula.
+func (sb *StringBuilder) CapitalizeFirst() *StringBuilder {
+	if sb.s == "" {
+		return sb
+	}
+	r, size := utf8.DecodeRuneInString(sb.s)
+	sb.s = string(unicode.ToUpper(r)) + sb.s[size:]
+	return sb
 }

@@ -26,7 +26,6 @@ func quotesUrls(router *gin.Engine) {
 	router.GET("/quotes/author/:author", quotes.GetQuotesByAuthor)
 	router.GET("/quotes/work/:work", quotes.GetQuotesByWork)
 	router.GET("/quotes/keyword/:keyword", quotes.GetQuotesByKeyword)
-	router.GET("/quotes/topics", quotes.GetTopics)
 	router.GET("/quotes/random", quotes.GetRandomQuote)
 }
 
@@ -49,8 +48,8 @@ func reviewsUrls(router *gin.Engine) {
 	router.DELETE("/reviews/:review_id", reviews.Delete)
 
 	// Search reviews
+	router.GET("/reviews", reviews.Get)
 	router.GET("/reviews/:review_id", reviews.GetByID)
-	router.GET("/reviews/title/:title", reviews.GetByTitle)
 }
 
 func miscUrls(router *gin.Engine) {

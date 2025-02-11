@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"quotes-api/internal/domain/reviews"
 	"quotes-api/internal/domain/reviews/service"
+	"quotes-api/internal/util/conversions"
 	"strconv"
 )
 
@@ -47,7 +48,14 @@ func Update(c *gin.Context) {
 		})
 		return
 	}
-	review.ReviewID = reviewID
+	review.ReviewID, err = conversions.SafeIntConversion(reviewID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error getting last id review",
+			"error":   err.Error(),
+		})
+		return
+	}
 
 	if err := service.Update(&review); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -108,22 +116,29 @@ func GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, review)
 }
 
-func GetByTitle(c *gin.Context) {
-	title := c.Param("title")
+func Get(c *gin.Context) {
+	var allReviews []reviews.Review
+	var err error
 
-	reviewsByTitle, err := service.GetByTitle(title)
+	title := c.Query("title")
+	if title == "" {
+		allReviews, err = service.Get()
+	} else {
+		allReviews, err = service.GetByTitle(title)
+	}
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error getting review",
+			"message": "Error getting all reviews",
 			"error":   err.Error(),
 		})
 		return
 	}
 
-	if len(reviewsByTitle) == 0 {
+	if len(allReviews) == 0 {
 		c.JSON(http.StatusNotFound, nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, reviewsByTitle)
+	c.JSON(http.StatusOK, allReviews)
 }
