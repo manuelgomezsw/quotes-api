@@ -31,6 +31,7 @@ func Create(newReview *reviews.Review) error {
 		newReview.Review,
 		newReview.Author,
 		newReview.Source,
+		newReview.Column,
 	)
 	if err != nil {
 		return err
@@ -61,6 +62,7 @@ func Update(currentReview *reviews.Review) error {
 		currentReview.Review,
 		currentReview.Author,
 		currentReview.Source,
+		currentReview.Column,
 		currentReview.ReviewID,
 	)
 	if err != nil {
@@ -109,6 +111,7 @@ func Get() ([]reviews.Review, error) {
 			&review.Author,
 			&review.Source,
 			&review.Keywords,
+			&review.Column,
 			&review.DateCreated,
 		)
 		if err != nil {
@@ -141,6 +144,7 @@ func GetByID(reviewID int64) (reviews.Review, error) {
 			&review.Author,
 			&review.Source,
 			&review.Keywords,
+			&review.Column,
 			&review.DateCreated,
 		)
 		if err != nil {
@@ -173,6 +177,7 @@ func GetByTitle(title string) ([]reviews.Review, error) {
 			&review.Author,
 			&review.Source,
 			&review.Keywords,
+			&review.Column,
 			&review.DateCreated,
 		)
 		if err != nil {
