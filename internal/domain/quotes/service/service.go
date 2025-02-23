@@ -18,7 +18,7 @@ func Create(newQuote *quotes.Quote) error {
 	}
 	formatQuote(newQuote, keywords)
 
-	if err := repository.CreateQuote(newQuote); err != nil {
+	if err := repository.Create(newQuote); err != nil {
 		return err
 	}
 
@@ -38,7 +38,7 @@ func Update(quoteID int64, currentQuote *quotes.Quote) error {
 	}
 	formatQuote(currentQuote, keywords)
 
-	if err := repository.UpdateQuote(quoteID, currentQuote); err != nil {
+	if err := repository.Update(quoteID, currentQuote); err != nil {
 		return err
 	}
 
@@ -56,7 +56,7 @@ func Update(quoteID int64, currentQuote *quotes.Quote) error {
 }
 
 func Delete(quoteID int64) error {
-	if err := repository.DeleteQuote(quoteID); err != nil {
+	if err := repository.Delete(quoteID); err != nil {
 		return err
 	}
 
@@ -64,7 +64,7 @@ func Delete(quoteID int64) error {
 }
 
 func GetByID(quoteID int64) (quotes.Quote, error) {
-	quote, err := repository.GetQuoteByID(quoteID)
+	quote, err := repository.GetByID(quoteID)
 	if err != nil {
 		return quotes.Quote{}, err
 	}
@@ -74,7 +74,7 @@ func GetByID(quoteID int64) (quotes.Quote, error) {
 }
 
 func GetByKeyword(keyword string) ([]quotes.Quote, error) {
-	quotesByKeyword, err := repository.GetQuotesByKeyword(keyword)
+	quotesByKeyword, err := repository.GetByKeyword(keyword)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func GetByKeyword(keyword string) ([]quotes.Quote, error) {
 }
 
 func GetByAuthor(author string) ([]quotes.Quote, error) {
-	quoteByAuthor, err := repository.GetQuotesByAuthor(author)
+	quoteByAuthor, err := repository.GetByAuthor(author)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func GetByAuthor(author string) ([]quotes.Quote, error) {
 }
 
 func GetByWork(work string) ([]quotes.Quote, error) {
-	quotesByWork, err := repository.GetQuotesByWork(work)
+	quotesByWork, err := repository.GetByWork(work)
 	if err != nil {
 		return nil, err
 	}

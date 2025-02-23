@@ -71,3 +71,15 @@ func (sb *StringBuilder) CapitalizeFirst() *StringBuilder {
 	sb.s = string(unicode.ToUpper(r)) + sb.s[size:]
 	return sb
 }
+
+// TruncateString devuelve los primeros n caracteres de s concatenando ... al final.
+func TruncateString(s string, n int) string {
+	// Si el número total de runas es menor o igual que n, se retorna s completo.
+	if utf8.RuneCountInString(s) <= n {
+		return s
+	}
+
+	// Convertir el string a slice de runas.
+	runes := []rune(s)
+	return string(runes[:n-3]) + "..."
+}

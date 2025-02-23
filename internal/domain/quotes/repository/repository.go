@@ -20,7 +20,7 @@ const (
 	fileSqlGetMinMaxQuotes    = "GetMinMaxQuotes.sql"
 )
 
-func CreateQuote(newQuote *quotes.Quote) error {
+func Create(newQuote *quotes.Quote) error {
 	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlCreateQuote))
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func CreateQuote(newQuote *quotes.Quote) error {
 	return nil
 }
 
-func UpdateQuote(quoteID int64, currentQuote *quotes.Quote) error {
+func Update(quoteID int64, currentQuote *quotes.Quote) error {
 	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlUpdateQuote))
 	if err != nil {
 		return err
@@ -66,7 +66,7 @@ func UpdateQuote(quoteID int64, currentQuote *quotes.Quote) error {
 	return nil
 }
 
-func DeleteQuote(quoteID int64) error {
+func Delete(quoteID int64) error {
 	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlDeleteQuote))
 	if err != nil {
 		return err
@@ -83,7 +83,7 @@ func DeleteQuote(quoteID int64) error {
 	return nil
 }
 
-func GetQuoteByID(quoteID int64) (quotes.Quote, error) {
+func GetByID(quoteID int64) (quotes.Quote, error) {
 	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetQuoteByID))
 	if err != nil {
 		return quotes.Quote{}, err
@@ -105,7 +105,7 @@ func GetQuoteByID(quoteID int64) (quotes.Quote, error) {
 	return quote, nil
 }
 
-func GetQuotesByKeyword(keyword string) ([]quotes.Quote, error) {
+func GetByKeyword(keyword string) ([]quotes.Quote, error) {
 	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetQuotesByKeyword))
 	if err != nil {
 		return nil, err
@@ -131,7 +131,7 @@ func GetQuotesByKeyword(keyword string) ([]quotes.Quote, error) {
 	return quotesSearched, nil
 }
 
-func GetQuotesByAuthor(author string) ([]quotes.Quote, error) {
+func GetByAuthor(author string) ([]quotes.Quote, error) {
 	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetQuotesByAuthor))
 	if err != nil {
 		return nil, err
@@ -157,7 +157,7 @@ func GetQuotesByAuthor(author string) ([]quotes.Quote, error) {
 	return quotesSearched, nil
 }
 
-func GetQuotesByWork(work string) ([]quotes.Quote, error) {
+func GetByWork(work string) ([]quotes.Quote, error) {
 	query, err := os.ReadFile(fmt.Sprintf("%s/%s", basePathSqlQueries, fileSqlGetQuotesByWork))
 	if err != nil {
 		return nil, err
